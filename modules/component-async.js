@@ -1,8 +1,9 @@
 // ####### Declarations ##########
-const h = require('./vendors/snabbdom/h.js')
-const patch = require('./vendors/snabbdom/patch.js')
-const { defaultsDeepPreserveArrays, divideByProps } = require('./utils/helpers.js')
+const h = require('../vendors/snabbdom/h.js')
+const patch = require('../vendors/snabbdom/patch.js')
+const { defaultsDeepPreserveArrays, divideByProps } = require('../utils/helpers.js')
 const { defaultsDeep, forEach, map, last, uniq, includes, concat, isFunction, isArray } = require('lodash')
+const lazy = require('./lazy.js')
 
 // ####### Defaults ##########
 
@@ -69,9 +70,7 @@ const loader = (params = {}) => {
     key: 'loader',
     ...s,
     ...params.loaderData
-  }, [
-    h('div#gv-ld-2.gv-ld')
-  ])
+  }, 'loading...')
 }
 
 // ######## Actions ###########

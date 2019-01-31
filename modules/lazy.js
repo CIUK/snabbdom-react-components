@@ -1,6 +1,6 @@
-const h = require('./vendors/snabbdom/h.js')
-const patch = require('./vendors/snabbdom/patch.js')
-const  { isFunction, isArray, isString } = require('lodash')
+const h = require('../vendors/snabbdom/h.js')
+const patch = require('../vendors/snabbdom/patch.js')
+const { isFunction, isArray, isString } = require('lodash')
 
 const getLoader = (waitComponent) => {
   let loader = waitComponent

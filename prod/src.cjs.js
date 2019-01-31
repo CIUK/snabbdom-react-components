@@ -1,4 +1,11 @@
-import lodash, { forEach, isArray, isString, has } from 'lodash';
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
+
+var lodash = require('lodash');
+var lodash__default = _interopDefault(lodash);
 
 var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
@@ -1497,9 +1504,9 @@ var eventlisteners = {
 
 var patch = snabbdom.init([_class, props, attributes, style, eventlisteners]);
 
-var isFunction = lodash.isFunction,
-    isArray$1 = lodash.isArray,
-    isString$1 = lodash.isString;
+var isFunction = lodash__default.isFunction,
+    isArray = lodash__default.isArray,
+    isString = lodash__default.isString;
 
 var getLoader = function getLoader(waitComponent) {
   var loader = waitComponent;
@@ -1507,12 +1514,12 @@ var getLoader = function getLoader(waitComponent) {
   if (isFunction(loader)) {
     loader = loader();
 
-    if (!isArray$1(loader)) {
+    if (!isArray(loader)) {
       loader = [loader];
     }
   }
 
-  if (!isString$1(loader) && !isArray$1(loader)) {
+  if (!isString(loader) && !isArray(loader)) {
     loader = [loader];
   }
 
@@ -2941,9 +2948,9 @@ var isArguments_1 = isArguments;
  * _.isArray(_.noop);
  * // => false
  */
-var isArray$2 = Array.isArray;
+var isArray$1 = Array.isArray;
 
-var isArray_1 = isArray$2;
+var isArray_1 = isArray$1;
 
 /** Used as references for various `Number` constants. */
 var MAX_SAFE_INTEGER = 9007199254740991;
@@ -4159,12 +4166,12 @@ var _castFunction = castFunction;
  * });
  * // => Logs 'a' then 'b' (iteration order is not guaranteed).
  */
-function forEach$1(collection, iteratee) {
+function forEach(collection, iteratee) {
   var func = isArray_1(collection) ? _arrayEach : _baseEach;
   return func(collection, _castFunction(iteratee));
 }
 
-var forEach_1 = forEach$1;
+var forEach_1 = forEach;
 
 /**
  * The base implementation of methods like `_.findKey` and `_.findLastKey`,
@@ -5637,12 +5644,12 @@ var stringTag$2 = '[object String]';
  * _.isString(1);
  * // => false
  */
-function isString$2(value) {
+function isString$1(value) {
   return typeof value == 'string' ||
     (!isArray_1(value) && isObjectLike_1(value) && _baseGetTag(value) == stringTag$2);
 }
 
-var isString_1 = isString$2;
+var isString_1 = isString$1;
 
 /**
  * Converts `iterator` to an array.
@@ -6280,11 +6287,11 @@ var _baseHas = baseHas;
  * _.has(other, 'a');
  * // => false
  */
-function has$1(object, path) {
+function has(object, path) {
   return object != null && _hasPath(object, path, _baseHas);
 }
 
-var has_1 = has$1;
+var has_1 = has;
 
 var isVNode = function isVNode(vnode) {
   if (isObject_1(vnode) && has_1(vnode, 'children') && has_1(vnode, 'data') && has_1(vnode, 'elm') && has_1(vnode, 'key') && has_1(vnode, 'sel') && has_1(vnode, 'text')) {
@@ -6316,7 +6323,7 @@ var getVNode = function getVNode() {
       }
     };
 
-    if (!children && (isVNode_1(data) || isArray(data) || isString(data))) {
+    if (!children && (isVNode_1(data) || lodash.isArray(data) || lodash.isString(data))) {
       return h(sel, defprops, data);
     }
 
@@ -6329,7 +6336,7 @@ var execFuncArgs = function execFuncArgs(arg, props) {
     if (getVNode().toString() === arg.toString()) {
       var vnode = arg();
 
-      if (has(vnode, 'data.styledProps.css')) {
+      if (lodash.has(vnode, 'data.styledProps.css')) {
         return vnode.data.styledProps.css;
       }
 
@@ -6353,7 +6360,7 @@ var cssWithPropsPlain = function cssWithPropsPlain(props) {
     }
 
     var styles = "";
-    forEach(literals, function (literal, i) {
+    lodash.forEach(literals, function (literal, i) {
       if (expressions[i]) {
         styles += "".concat(literal).concat(execFuncArgs(expressions[i], props || {}));
       } else {
@@ -7258,17 +7265,17 @@ var objectSpread = _objectSpread;
 
 var defaultsDeepPreserveArrays$1 = helpers.defaultsDeepPreserveArrays,
     divideByProps$1 = helpers.divideByProps;
-var defaultsDeep = lodash.defaultsDeep,
-    forEach$2 = lodash.forEach,
-    map$1 = lodash.map,
-    last = lodash.last,
-    uniq = lodash.uniq,
-    includes = lodash.includes,
-    concat = lodash.concat,
-    toArray$1 = lodash.toArray,
-    mergeWith$1 = lodash.mergeWith,
-    isFunction$2 = lodash.isFunction,
-    isArray$3 = lodash.isArray; // ####### Defaults ##########
+var defaultsDeep = lodash__default.defaultsDeep,
+    forEach$1 = lodash__default.forEach,
+    map$1 = lodash__default.map,
+    last = lodash__default.last,
+    uniq = lodash__default.uniq,
+    includes = lodash__default.includes,
+    concat = lodash__default.concat,
+    toArray$1 = lodash__default.toArray,
+    mergeWith$1 = lodash__default.mergeWith,
+    isFunction$2 = lodash__default.isFunction,
+    isArray$2 = lodash__default.isArray; // ####### Defaults ##########
 
 var CONSTS = {
   ACTION: {}
@@ -7424,14 +7431,14 @@ var actions = function actions(viewObject) {
         items = _divideByProps2[0],
         defs = _divideByProps2[1];
 
-    forEach$2(defs, function (d, k) {
+    forEach$1(defs, function (d, k) {
       if (!viewObject.hooks[k]) {
         viewObject.hooks[k] = [viewObject.actions[k]];
       }
 
       viewObject.hooks[k].push(d);
     });
-    forEach$2(items, function (d, k) {
+    forEach$1(items, function (d, k) {
       if (!viewObject.hooks.items) {
         viewObject.hooks.items = {};
       }
@@ -7501,7 +7508,7 @@ var componentFn = function componentFn(viewObject) {
         return type;
       }
 
-      if (isArray$3(h$$1)) {
+      if (isArray$2(h$$1)) {
         return 'array';
       }
     }));
@@ -7560,7 +7567,7 @@ var componentFn = function componentFn(viewObject) {
           component = t;
         }
 
-        forEach$2(hook, function (fn) {
+        forEach$1(hook, function (fn) {
           var cmpnt = objectSpread({}, component);
 
           if (result.hasOwnProperty(name)) {
@@ -7581,13 +7588,13 @@ var componentFn = function componentFn(viewObject) {
   };
 
   var registerHooks = function registerHooks() {
-    forEach$2(viewObject.hooks, function (hook, name) {
+    forEach$1(viewObject.hooks, function (hook, name) {
       if (name === 'items') {
         if (!viewObject.actions.items) {
           viewObject.actions.items = {};
         }
 
-        forEach$2(hook, function (h$$1, n) {
+        forEach$1(hook, function (h$$1, n) {
           viewObject.actions.items[n] = createCallStactReducer(h$$1, n);
         });
       } else {
@@ -7721,15 +7728,15 @@ var component = createComponent;
 
 var defaultsDeepPreserveArrays$2 = helpers.defaultsDeepPreserveArrays,
     divideByProps$2 = helpers.divideByProps;
-var defaultsDeep$1 = lodash.defaultsDeep,
-    forEach$3 = lodash.forEach,
-    map$2 = lodash.map,
-    last$1 = lodash.last,
-    uniq$1 = lodash.uniq,
-    includes$1 = lodash.includes,
-    concat$1 = lodash.concat,
-    isFunction$3 = lodash.isFunction,
-    isArray$4 = lodash.isArray; // ####### Defaults ##########
+var defaultsDeep$1 = lodash__default.defaultsDeep,
+    forEach$2 = lodash__default.forEach,
+    map$2 = lodash__default.map,
+    last$1 = lodash__default.last,
+    uniq$1 = lodash__default.uniq,
+    includes$1 = lodash__default.includes,
+    concat$1 = lodash__default.concat,
+    isFunction$3 = lodash__default.isFunction,
+    isArray$3 = lodash__default.isArray; // ####### Defaults ##########
 
 var CONSTS$1 = {
   ACTION: {}
@@ -7975,14 +7982,14 @@ var actions$1 = function actions(viewObject) {
         items = _divideByProps2[0],
         defs = _divideByProps2[1];
 
-    forEach$3(defs, function (d, k) {
+    forEach$2(defs, function (d, k) {
       if (!viewObject.hooks[k]) {
         viewObject.hooks[k] = [viewObject.actions[k]];
       }
 
       viewObject.hooks[k].push(d);
     });
-    forEach$3(items, function (d, k) {
+    forEach$2(items, function (d, k) {
       if (!viewObject.hooks.items) {
         viewObject.hooks.items = {};
       }
@@ -8052,7 +8059,7 @@ var componentFn$1 = function componentFn(viewObject) {
         return type;
       }
 
-      if (isArray$4(h$$1)) {
+      if (isArray$3(h$$1)) {
         return 'array';
       }
     }));
@@ -8111,7 +8118,7 @@ var componentFn$1 = function componentFn(viewObject) {
           component = t;
         }
 
-        forEach$3(hook, function (fn) {
+        forEach$2(hook, function (fn) {
           var cmpnt = objectSpread({}, component);
 
           if (result.hasOwnProperty(name)) {
@@ -8132,13 +8139,13 @@ var componentFn$1 = function componentFn(viewObject) {
   };
 
   var registerHooks = function registerHooks() {
-    forEach$3(viewObject.hooks, function (hook, name) {
+    forEach$2(viewObject.hooks, function (hook, name) {
       if (name === 'items') {
         if (!viewObject.actions.items) {
           viewObject.actions.items = {};
         }
 
-        forEach$3(hook, function (h$$1, n) {
+        forEach$2(hook, function (h$$1, n) {
           viewObject.actions.items[n] = createCallStactReducer(h$$1, n);
         });
       } else {
@@ -8329,5 +8336,9 @@ src.patch = patch_1;
 src.styled = styled_1;
 src.createAsyncComponent = createAsyncComponent_1;
 
-export default src;
-export { h_1 as h, lazy_1$1 as lazy, patch_1 as patch, styled_1 as styled, createAsyncComponent_1 as createAsyncComponent };
+exports.default = src;
+exports.h = h_1;
+exports.lazy = lazy_1$1;
+exports.patch = patch_1;
+exports.styled = styled_1;
+exports.createAsyncComponent = createAsyncComponent_1;

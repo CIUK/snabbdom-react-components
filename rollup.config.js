@@ -4,16 +4,13 @@ import babel from 'rollup-plugin-babel';
 import { uglify } from 'rollup-plugin-uglify';
 import pkg from './package.json';
 
-const outputs = [{ file: pkg.main, format: 'umd' }]
+const outputs = [{ file: pkg.main, format: 'cjs' }, { file: pkg.module, format: 'esm' }]
 
 export default {
 	input: 'src.js',
+	external: ['lodash'],
 	output: outputs.map((type) => ({
 		...type,
-		globals: {
-			lodash: 'lodash'
-		},
-		name: 'snabbdomReactComponents',
 		exports: 'named',
 	})),
 	plugins: [
@@ -22,9 +19,8 @@ export default {
 		babel({
 			runtimeHelpers: true,
 			exclude: 'node_modules/**',
-			presets: [['@babel/preset-env', {modules: false}]],
+			presets: ['@babel/preset-env'],
 			plugins: ['@babel/plugin-transform-runtime'],
-		}),
-		// uglify()
+		})
 	]
 }

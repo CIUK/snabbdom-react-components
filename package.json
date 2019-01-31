@@ -2,7 +2,8 @@
   "name": "snabbdom-react-components",
   "version": "0.1.0",
   "description": "React like component builder for Snabbdom",
-  "main": "prod/src.js",
+  "main": "prod/src.cjs.js",
+  "module": "prod/src.js",
   "scripts": {
     "build": "rollup -c",
     "dev": "rollup -c -w"

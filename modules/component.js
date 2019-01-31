@@ -1,36 +1,8 @@
 // ####### Declarations ##########
-const h = require('./vendors/snabbdom/h.js')
-const patch = require('./vendors/snabbdom/patch.js')
+const h = require('../vendors/snabbdom/h.js')
+const patch = require('../vendors/snabbdom/patch.js')
+const { defaultsDeepPreserveArrays, divideByProps } = require('../utils/helpers.js')
 const { defaultsDeep, forEach, map, last, uniq, includes, concat, toArray, mergeWith, isFunction, isArray } = require('lodash')
-
-// ####### Helpers ##########
-
-const divideByProps = (object, base) => {
-  const items = {}
-  const rest = {}
-
-  forEach(object, (o, k) => {
-    if (!base.hasOwnProperty(k)) {
-      items[k] = o
-    } else {
-      rest[k] = o
-    }
-  })
-
-  return [items, rest]
-}
-
-const defaultsDeepPreserveArrays = function() {
-  let output = {}
-
-  toArray(arguments).reverse().forEach(item => {
-    mergeWith(output, item, (_, sourceValue) => {
-      return isArray(sourceValue) ? sourceValue : undefined
-    })
-  })
-
-  return output
-}
 
 // ####### Defaults ##########
 
@@ -97,9 +69,7 @@ const loader = (params) => {
     key: 'loader',
     ...s,
     ...params.loaderData
-  }, [
-    h('div#gv-ld-2.gv-ld')
-  ])
+  }, 'loading')
 }
 
 // ######## Actions ###########
