@@ -28,7 +28,7 @@ To render siplest **SRC** component, we will use Snabbdom vnode, eg. paragraph. 
 Find more about `createComponent` function [here](#createComponent).
 
 ```javascript
-import createComponent, { h, patch } from 'snabbdom-react-component'
+import createComponent, { h, patch } from 'snabbdom-react-components'
 
 const myComponent = createComponent({
   render: () => {
@@ -45,7 +45,7 @@ One of the biggers benefits for using **SRC** is the React Based lifecycle mecha
 In this example, we will render a list of all the users, but for the time we don't have them, we will render loading message
 
 ```javascript
-import createComponent, { h } from 'snabbdom-react-component'
+import createComponent, { h } from 'snabbdom-react-components'
 
 const myComponent = createComponent({
   state: {
@@ -72,7 +72,7 @@ const myComponent = createComponent({
 Along with component builder, **SRC** have build in [Styled Components](https://styled-components.com) builder we all love from React. It is not as powerfull yet. Yet 😇
 
 ```javascript
-import createComponent, { styled } from 'snabbdom-react-component'
+import createComponent, { styled } from 'snabbdom-react-components'
 
 const Button = styled.button`
   color: ${props => !props.toggled ? '#fff' : '#4f4f4f'};
@@ -104,7 +104,7 @@ const myComponent = createComponent({
 Redux for good become one of the best state managing liblaries. Based on that, **SRC** has build-in simpler and easier, but powerfull reducer functionality
 
 ```javascript
-import createComponent, { styled } from 'snabbdom-react-component'
+import createComponent, { styled } from 'snabbdom-react-components'
 
 const Info = styled.div`
   color: #4f4f4f;
@@ -241,7 +241,7 @@ This is the more advanced version of simple `createComponent` method. **Is is hi
 The main diffrence between `createComponent` function is that this component by default is returned as `async` function throught the `lazy` helper. That's allow you to organize your code even more! Look at example. We will get the list of all the users and display as a list:
 
 ```javascript
-import createComponent, { styled, createAsyncComponent } from 'snabbdom-react-component'
+import createComponent, { styled, createAsyncComponent } from 'snabbdom-react-components'
 
 const Info = styled.div`
   color: #4f4f4f;
@@ -289,14 +289,86 @@ const myAsyncComponent = createAsyncComponent({
 As you can see on above example, we don't have to use any from the livecycle method to fetch data. Even more, we don't care about loading stage as our component will have data as default!
 
 ## Styled
-coming soon...
+Except the original [Styled Components](https://styled-components.com), **SRC Styled Components** resolve provided CSS into inline vnode styles (hopefully for time being only).
 
-## lazy
-coming soon...
+The main purpose of *SC* has been developed:
 
-### Learn more
-- How to use key property: [Snabbdom Keys](https://github.com/snabbdom/snabbdom#key--string--number)
+```javascript
+import { styled } from 'snabbdom-react-components'
 
+const Box = styled.div`
+  color: ${props => props.color || 'black'};
+`
+
+Box({
+  styled: {
+    color: 'red'
+  }
+})
+```
+
+What's amazing on **SRC SC** is the `css` helper which can resolve any valid CSS into basic Snabbdom vnode:
+
+```javascript
+import { h, css, cssWithProps } from 'snabbdom-react-components'
+
+const params = {
+  color: 'red'
+}
+
+const box = h('div', {
+  style: css`
+    background-color: black;
+  `
+})
+
+const box2 = h('div', {
+  style: cssWithProps(params)`
+    background-color: ${props => props.color || 'black'};
+  `
+})
+```
+
+You can also inherit styles from other Styled Components easier:
+
+```javascript
+import { styled } from 'snabbdom-react-components'
+
+const CircleBox = styled.div`
+  display: block;
+  width: ${props => params.size || '64px'};
+  height: ${props => params.size || '64px'};
+  border-radius: 50%;
+`
+
+const Avatar = styled.div`
+  ${CircleBox}
+  background-size: cover;
+  background-image: ${props => props.avatar || 'no-avatar.jpg'};
+`
+```
+
+Styled Components are the thing we want to improve the most.
+
+## Lazy
+This helper gives you option to load any `async` function returning `vnode` by rendering the loader `vnode` until the function is resolved.
+
+```javascript
+import { lazy, h, patch } from 'snabbdom-react-components'
+
+const lazyFunction = async () => {
+  const users = await Api.getUsers()
+
+  return h('ul', users.map((user) => h('li', {key: user.id}, user.name))
+}
+
+patch(document.getElementById('root'), lazy(lazyFunction, h('div', 'loading')))
+```
+
+### Learn more about projects we were inspired:
+- [Snabbdom](https://github.com/snabbdom/snabbdom#key--string--number)
+- [Styled Components](https://styled-components.com)
+- [React](https://reactjs.org)
 ## More comming soon!
 
 Made in London with ❤️ by [**Career Interactive**](https://careerinteractive.org) (by Szymon Pajka 👏)
