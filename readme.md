@@ -69,7 +69,7 @@ const myComponent = createComponent({
 ```
 
 ### 3. Styled Components
-Along with component builder, self have build in [Styled Components](https://styled-components.com) builder we all love from React. It is not as powerfull yet. Yet 😇
+Along with component builder, **SRC** have build in [Styled Components](https://styled-components.com) builder we all love from React. It is not as powerfull yet. Yet 😇
 
 ```javascript
 import createComponent, { styled } from 'snabbdom-react-component'
@@ -101,7 +101,7 @@ const myComponent = createComponent({
 ```
 
 ### 4. Reducers
-Redux for good become one of the best state managing liblaries. Based on that, **self** has build-in simpler and easier, but powerfull reducer functionality
+Redux for good become one of the best state managing liblaries. Based on that, **SRC** has build-in simpler and easier, but powerfull reducer functionality
 
 ```javascript
 import createComponent, { styled } from 'snabbdom-react-component'
@@ -235,6 +235,64 @@ const component = {
   ...viewObject.params
 })
 ```
+## createAsyncComponent
+This is the more advanced version of simple `createComponent` method. **Is is highly possible that this functon will become the main `createComponent` method in future**. So far it is in test phase, but you're welcome to test.
+
+The main diffrence between `createComponent` function is that this component by default is returned as `async` function throught the `lazy` helper. That's allow you to organize your code even more! Look at example. We will get the list of all the users and display as a list:
+
+```javascript
+import createComponent, { styled, createAsyncComponent } from 'snabbdom-react-component'
+
+const Info = styled.button`
+  color: #4f4f4f;
+  font-size: 16px;
+`
+const List = styled.ul``;
+const ListEl = styled.li``;
+
+// basic createComponent:
+const myComponent = createComponent({
+  state: {
+    users: []
+  },
+  componentDidMount: async (state, component) => {
+    const users = await Api.getUsers()
+    
+    component.setState({ users })
+  },
+  render: (state, component) => {
+    const { users } = state;
+
+    if (!users.length) {
+      return Info('No users to show...')
+    }
+
+    return List(users.map(user => ListEl({ key: user.id }, user.name)))
+  }
+})
+
+// basic createAsyncComponent:
+const myAsyncComponent = createAsyncComponent({
+  state: async () => {
+    const users = await Api.getUsers()
+
+    return { users }
+  },
+  render: (state, component) => {
+    const { users } = state;
+
+    return List(users.map(user => ListEl({ key: user.id }, user.name)))
+  }
+})
+```
+
+As you can see on above example, we don't have to use any from the livecycle method to fetch data. Even more, we don't care about loading stage as our component will have data as default!
+
+## Styled
+coming soon...
+
+## lazy
+coming soon...
 
 ### Learn more
 - How to use key property: [Snabbdom Keys](https://github.com/snabbdom/snabbdom#key--string--number)
