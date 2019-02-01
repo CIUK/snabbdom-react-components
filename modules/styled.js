@@ -1,9 +1,9 @@
 // ####### Declarations ##########
-import h from '../vendors/snabbdom/h.js'
-import cssToJS from '../utils/cssToJS.js'
-import { forEach, isArray, isString, has } from 'lodash'
-import { mergeWithFn, ss } from '../utils/helpers.js'
-import { isVNode } from '../utils/vDomHelpers.js'
+const h = require('../vendors/snabbdom/h.js')
+const cssToJS = require('../utils/cssToJS.js')
+const { forEach, isArray, isString, has } = require('lodash')
+const { mergeWithFn, ss } = require('../utils/helpers.js')
+const { isVNode } = require('../utils/vDomHelpers.js')
 
 // ####### Helpers ##########
 const getVNode = (sel = 'div', literals, ...expressions) => (data = {}, children) => {
@@ -194,10 +194,4 @@ const styled = {
 }
 
 // ########### Export ###########
-export default styled
-
-export {
-  css,
-  cssWithProps,
-  cssWithPropsPlain
-}
+module.exports = { styled, css, cssWithProps, cssWithPropsPlain }

@@ -1,12 +1,9 @@
 const lazy = require('./modules/lazy.js')
-const css = require('./modules/styled').css
 const h = require('./vendors/snabbdom/h.js')
-const styled = require('./modules/styled.js')
 const patch = require('./vendors/snabbdom/patch.js')
 const createComponent = require('./modules/component.js')
-const cssWithProps = require('./modules/styled').cssWithProps
 const createAsyncComponent = require('./modules/component-async.js')
-const cssWithPropsPlain = require('./modules/styled').cssWithPropsPlain
+const { styled, css, cssWithProps, cssWithPropsPlain } = require('./modules/styled')
 
 module.exports = createComponent
 
