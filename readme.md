@@ -1,4 +1,4 @@
-# This is not ready to use package, it is on test phase 😥 Test for fun, not for production.
+# This is not ready to use package, it is on test phase 😥 Will be releaed soon
 
 ## Please use carfully, as documentation need to be improved.
 
