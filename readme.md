@@ -1,4 +1,5 @@
-# THIS IS NOT READY TO USE PACKAGE, IT IS ON TEST PHASE 😥 
+# This is not ready to use package, it is on test phase 😥 Test for fun, not for production.
+
 ## Please use carfully, as documentation need to be improved.
 
 # snabbdom-react-components.js
