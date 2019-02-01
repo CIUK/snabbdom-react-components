@@ -20,11 +20,10 @@ const defaultParams = {
   render: null,
   async: false, // If true, component will be returned as a promise
   reducer: null,
-  spinner: false,
   state: { ...state },
-  delaySpinner: false, // If true, component spinner will appear with delay (for fast internet connection spinner will not be shown)
   ejectComponent: false, // If true, component will return object with actions and elm
   CONSTS: { ...CONSTS },
+  shouldComponentUpdate: true,
   componentDidInit: null,
   componentWillInit: null,
   componentDidMount: null,
@@ -33,43 +32,10 @@ const defaultParams = {
   componentDidUnmount: null,
   componentWillUpdate: null,
   componentWillUnmount: null,
-  shouldComponentUpdate: true,
   componentWillPrepatch: null,
   componentWillPostpatch: null,
-  componentWillUpdateVNode: null,
   componentDidCreateViewObject: null,
   componentWillCreateViewObject: null
-}
-
-// ####### Component Helpers ##########
-
-const loader = (params) => {
-  const { delaySpinner } = params
-
-  const s = delaySpinner ? {
-    style: {
-      WebkitAnimationDuration: '0.5s',
-      WebkitAnimationFillMode: 'both',
-      WebkitAnimationDelay: '0.3s',
-      WebkitAnimationName: 'fadeIn',
-      animationDuration: '0.5s',
-      animationFillMode: 'both',
-      animationDelay: '0.3s',
-      animationName: 'fadeIn'
-    }
-  } : {}
-
-  return h('div', {
-    style: {
-      display: 'block',
-      opacyty: '0',
-      height: '32px',
-      padding: '10px'
-    },
-    key: 'loader',
-    ...s,
-    ...params.loaderData
-  }, 'loading')
 }
 
 // ######## Actions ###########
@@ -175,8 +141,6 @@ const actions = (viewObject) => {
     })
   }
 
-  const getLoader = () => loader(viewObject.params)
-
   return {
     items,
     useHook,
@@ -184,7 +148,6 @@ const actions = (viewObject) => {
     dispatch,
     getState,
     setState,
-    getLoader,
     forceUpdate,
     ...viewObject.params
   }
@@ -215,11 +178,6 @@ const componentFn = (viewObject) => {
 
   const getViewContext = () => {
     console.log('Finding view context...')
-
-    if (viewObject.actions.spinner) {
-      console.log('View context found: Spinner')
-      return loader(viewObject.actions)
-    }
 
     console.log('View context found: `render()` result')
     return getViewComponent(viewObject.actions.state)
@@ -385,12 +343,6 @@ const createComponent = (params = defaultParams) => {
           viewObject.actions.componentWillPrepatch(viewObject.actions.state, viewObject.actions)
         }
       },
-      // update: () => {
-      //   console.log('update')
-      //   if (viewObject.actions.componentWillUpdateVNode && isFunction(viewObject.actions.componentWillUpdateVNode)) {
-      //     viewObject.actions.componentWillUpdateVNode(viewObject.actions.state, viewObject.actions)
-      //   }
-      // },
       postpatch: () => {
         console.log('postpatch')
         if (viewObject.actions.componentWillPostpatch && isFunction(viewObject.actions.componentWillPostpatch)) {
