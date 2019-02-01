@@ -336,16 +336,23 @@ import { styled } from 'snabbdom-react-components'
 
 const CircleBox = styled.div`
   display: block;
-  width: ${props => params.size || '64px'};
-  height: ${props => params.size || '64px'};
+  width: ${props => props.size || '64px'};
+  height: ${props => props.size || '64px'};
+  background-color: #eee;
   border-radius: 50%;
 `
-
 const Avatar = styled.div`
   ${CircleBox}
   background-size: cover;
-  background-image: ${props => props.avatar || 'no-avatar.jpg'};
+  background-image: url(${props => props.avatar || 'no-avatar.jpg'});
 `
+
+const avatar = Avatar({
+  styled: {
+    size: '80px',
+    avatar: 'avatar.jpg'
+  }
+})
 ```
 
 Styled Components are the thing we want to improve the most.
