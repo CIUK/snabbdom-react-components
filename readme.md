@@ -154,4 +154,4 @@ const component = createComponent({
 
 ## More comming soon!
 
-Made in London with ❤️ by [**Career Interactive**](https://careerinteractive.org) (by Szymon Pajka)
+Made in London with ❤️ by [**Career Interactive**](https://careerinteractive.org) (by Szymon Pajka 👏)
