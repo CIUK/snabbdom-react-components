@@ -9,8 +9,13 @@
     "build": "rollup -c",
     "dev": "rollup -c -w"
   },
+  "repository": "CIUK/snabbdom-react-components",
   "author": "Career interactive (by Szymon Pajka)",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CIUK/snabbdom-react-components/issues"
+  },
+  "homepage": "https://github.com/CIUK/snabbdom-react-components",
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
