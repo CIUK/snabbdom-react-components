@@ -106,7 +106,7 @@ Redux for good become one of the best state managing liblaries. Based on that, *
 ```javascript
 import createComponent, { styled } from 'snabbdom-react-component'
 
-const Info = styled.button`
+const Info = styled.div`
   color: #4f4f4f;
   font-size: 16px;
 `
@@ -243,14 +243,14 @@ The main diffrence between `createComponent` function is that this component by 
 ```javascript
 import createComponent, { styled, createAsyncComponent } from 'snabbdom-react-component'
 
-const Info = styled.button`
+const Info = styled.div`
   color: #4f4f4f;
   font-size: 16px;
 `
 const List = styled.ul``;
 const ListEl = styled.li``;
 
-// basic createComponent:
+// createComponent:
 const myComponent = createComponent({
   state: {
     users: []
@@ -271,7 +271,7 @@ const myComponent = createComponent({
   }
 })
 
-// basic createAsyncComponent:
+// createAsyncComponent:
 const myAsyncComponent = createAsyncComponent({
   state: async () => {
     const users = await Api.getUsers()
