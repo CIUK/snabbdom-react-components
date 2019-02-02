@@ -366,7 +366,7 @@ import { lazy, h, patch } from 'snabbdom-react-components'
 const lazyFunction = async () => {
   const users = await Api.getUsers()
 
-  return h('ul', users.map((user) => h('li', {key: user.id}, user.name))
+  return h('ul', users.map((user) => h('li', {key: user.id}, user.name)))
 }
 
 patch(document.getElementById('root'), lazy(lazyFunction, h('div', 'loading'))())
