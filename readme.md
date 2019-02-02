@@ -59,7 +59,7 @@ const myComponent = createComponent({
   render: (state, component) => {
     const { users } = state;
 
-    if (!users.lenth) {
+    if (!users.length) {
       return h('p', 'Fetching users...')
     }
 
