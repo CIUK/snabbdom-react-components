@@ -5,16 +5,16 @@ const createComponent = require('./modules/component.js')
 const createAsyncComponent = require('./modules/component-async.js')
 const { styled, css, cssWithProps, cssWithPropsPlain } = require('./modules/styled')
 
-const snabbomReactComponents = {
-  h: h,
-  css: css,
-  lazy: lazy,
-  patch: patch,
-  styled: styled,
-  cssWithProps: cssWithProps,
-  createComponent: createComponent,
-  cssWithPropsPlain: cssWithPropsPlain,
-  createAsyncComponent: createAsyncComponent
-}
+const snabbomReactComponents = {}
 
 module.exports = snabbomReactComponents
+
+module.exports.h = h
+module.exports.css = css
+module.exports.lazy = lazy
+module.exports.patch = patch
+module.exports.styled = styled
+module.exports.cssWithProps = cssWithProps
+module.exports.createComponent = createComponent
+module.exports.cssWithPropsPlain = cssWithPropsPlain
+module.exports.createAsyncComponent = createAsyncComponent
