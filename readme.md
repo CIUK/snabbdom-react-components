@@ -101,7 +101,7 @@ const myComponent = createComponent({
 ```
 
 ### 4. Reducers
-Redux for good become one of the best state managing liblaries. Based on that, **SRC** has build-in simpler and easier, but powerfull reducer functionality
+Redux for good become one of the best state managing libraries. Based on that, **SRC** has build-in simpler and easier, but powerfull reducer functionality
 
 ```javascript
 import { createComponent, styled } from 'snabbdom-react-components'
@@ -369,7 +369,7 @@ const lazyFunction = async () => {
   return h('ul', users.map((user) => h('li', {key: user.id}, user.name))
 }
 
-patch(document.getElementById('root'), lazy(lazyFunction, h('div', 'loading')))
+patch(document.getElementById('root'), lazy(lazyFunction, h('div', 'loading'))())
 ```
 
 ### Learn more about projects we were inspired:

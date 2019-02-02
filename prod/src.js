@@ -1519,9 +1519,14 @@ var getLoader = function getLoader(waitComponent) {
   return loader;
 };
 
+var getKey = function getKey() {
+  return Math.random().toString(36).substr(2, 9) + '.' + Math.random().toString(36).substr(2, 9);
+};
+
 var lazy = function lazy(lazyComponent, waitComponent) {
   return function (params) {
     return h('div', {
+      key: getKey(),
       hook: {
         insert: function () {
           var _insert = asyncToGenerator(

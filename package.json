@@ -1,6 +1,6 @@
 {
   "name": "snabbdom-react-components",
-  "version": "0.1.2-pre",
+  "version": "1.0.0",
   "description": "React like, Snabbdom based, Virtual Dom framework for JavaScript Web Applications",
   "keywords": ["React", "Snabbdom", "VNode", "VDom", "Virtual Dom", "Virtual Node", "Styled Components", "Redux"],
   "main": "prod/src.cjs.js",

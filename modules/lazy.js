@@ -20,8 +20,13 @@ const getLoader = (waitComponent) => {
   return loader
 }
 
+const getKey = function() {
+  return Math.random().toString(36).substr(2, 9) + '.' + Math.random().toString(36).substr(2, 9)
+}
+
 const lazy = (lazyComponent, waitComponent) => {
   return (params) => h('div', {
+    key: getKey(),
     hook: {
       insert: async (vnode) => {
         const view = await lazyComponent(params)
