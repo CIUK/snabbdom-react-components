@@ -28,7 +28,7 @@ To render siplest **SRC** component, we will use Snabbdom vnode, eg. paragraph. 
 Find more about `createComponent` function [here](#createComponent).
 
 ```javascript
-import createComponent, { h, patch } from 'snabbdom-react-components'
+import { createComponent, h, patch } from 'snabbdom-react-components'
 
 const myComponent = createComponent({
   render: () => {
@@ -45,7 +45,7 @@ One of the biggers benefits for using **SRC** is the React Based lifecycle mecha
 In this example, we will render a list of all the users, but for the time we don't have them, we will render loading message
 
 ```javascript
-import createComponent, { h } from 'snabbdom-react-components'
+import { createComponent, h } from 'snabbdom-react-components'
 
 const myComponent = createComponent({
   state: {
@@ -72,7 +72,7 @@ const myComponent = createComponent({
 Along with component builder, **SRC** have build in [Styled Components](https://styled-components.com) builder we all love from React. It is not as powerfull yet. Yet 😇
 
 ```javascript
-import createComponent, { styled } from 'snabbdom-react-components'
+import { createComponent, styled } from 'snabbdom-react-components'
 
 const Button = styled.button`
   color: ${props => !props.toggled ? '#fff' : '#4f4f4f'};
@@ -104,7 +104,7 @@ const myComponent = createComponent({
 Redux for good become one of the best state managing liblaries. Based on that, **SRC** has build-in simpler and easier, but powerfull reducer functionality
 
 ```javascript
-import createComponent, { styled } from 'snabbdom-react-components'
+import { createComponent, styled } from 'snabbdom-react-components'
 
 const Info = styled.div`
   color: #4f4f4f;
@@ -241,7 +241,7 @@ This is the more advanced version of simple `createComponent` method. **Is is hi
 The main diffrence between `createComponent` function is that this component by default is returned as `async` function throught the `lazy` helper. That's allow you to organize your code even more! Look at example. We will get the list of all the users and display as a list:
 
 ```javascript
-import createComponent, { styled, createAsyncComponent } from 'snabbdom-react-components'
+import { createComponent, styled, createAsyncComponent } from 'snabbdom-react-components'
 
 const Info = styled.div`
   color: #4f4f4f;

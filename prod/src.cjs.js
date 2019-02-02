@@ -8454,30 +8454,17 @@ var styled$1 = styled_1.styled,
     css$1 = styled_1.css,
     cssWithProps$1 = styled_1.cssWithProps,
     cssWithPropsPlain$1 = styled_1.cssWithPropsPlain;
-var src = component;
-var h_1 = h;
-var css_1 = css$1;
-var lazy_1$1 = lazy_1;
-var patch_1 = patch;
-var styled_1$1 = styled$1;
-var cssWithProps_1 = cssWithProps$1;
-var cssWithPropsPlain_1 = cssWithPropsPlain$1;
-var createAsyncComponent_1 = componentAsync;
-src.h = h_1;
-src.css = css_1;
-src.lazy = lazy_1$1;
-src.patch = patch_1;
-src.styled = styled_1$1;
-src.cssWithProps = cssWithProps_1;
-src.cssWithPropsPlain = cssWithPropsPlain_1;
-src.createAsyncComponent = createAsyncComponent_1;
+var snabbomReactComponents = {
+  h: h,
+  css: css$1,
+  lazy: lazy_1,
+  patch: patch,
+  styled: styled$1,
+  cssWithProps: cssWithProps$1,
+  createComponent: component,
+  cssWithPropsPlain: cssWithPropsPlain$1,
+  createAsyncComponent: componentAsync
+};
+var src = snabbomReactComponents;
 
 exports.default = src;
-exports.h = h_1;
-exports.css = css_1;
-exports.lazy = lazy_1$1;
-exports.patch = patch_1;
-exports.styled = styled_1$1;
-exports.cssWithProps = cssWithProps_1;
-exports.cssWithPropsPlain = cssWithPropsPlain_1;
-exports.createAsyncComponent = createAsyncComponent_1;
