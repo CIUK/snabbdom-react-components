@@ -2,12 +2,23 @@
   "name": "snabbdom-react-components",
   "version": "1.0.0",
   "description": "React like, Snabbdom based, Virtual Dom framework for JavaScript Web Applications",
-  "keywords": ["React", "Snabbdom", "VNode", "VDom", "Virtual Dom", "Virtual Node", "Styled Components", "Redux"],
+  "keywords": [
+    "React",
+    "Snabbdom",
+    "VNode",
+    "VDom",
+    "Virtual Dom",
+    "Virtual Node",
+    "Styled Components",
+    "Redux"
+  ],
   "main": "prod/src.cjs.js",
   "module": "prod/src.js",
   "scripts": {
     "build": "rollup -c",
-    "dev": "rollup -c -w"
+    "watch": "rollup -c -w dev",
+    "dev": "npm-run-all --parallel start watch",
+    "start": "node live-svr.js"
   },
   "repository": "CIUK/snabbdom-react-components",
   "author": "Career interactive (by Szymon Pajka)",
@@ -26,6 +37,7 @@
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",
+    "npm-run-all": "^4.1.3",
     "rollup": "^1.0.0",
     "rollup-plugin-babel": "^4.3.2",
     "rollup-plugin-babel-minify": "^7.0.0",
@@ -34,6 +46,7 @@
     "rollup-plugin-uglify": "^6.0.2"
   },
   "dependencies": {
+    "live-server": "^1.2.1",
     "lodash": "^4.17.11",
     "@babel/runtime": "^7.2.0"
   },

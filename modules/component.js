@@ -43,6 +43,8 @@ const defaultParams = {
 const actions = (viewObject) => {
   const items = divideByProps(viewObject.params, defaultParams)[0]
 
+  console.log(items)
+
   const getState = () => {
     return viewObject.actions.state
   }
