@@ -1,0 +1,20 @@
+{
+    "extends": "airbnb-base",
+    "env": {
+        "browser": true
+    },
+    "rules": {
+        "object-curly-newline": "off",
+        "import/order": [
+            0
+        ],
+        "max-len": "off",
+        "no-param-reassign": "off",
+        "no-use-before-define": "off",
+        "func-names": "off",
+        "prefer-const": "off",
+        "prefer-rest-params": "off",
+        "no-prototype-builtins": "warn",
+        "consistent-return": "warn"
+    }
+}

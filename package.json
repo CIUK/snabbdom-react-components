@@ -1,6 +1,6 @@
 {
   "name": "snabbdom-react-components",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React like, Snabbdom based, Virtual Dom framework for JavaScript Web Applications",
   "keywords": [
     "React",
@@ -31,9 +31,10 @@
     "@babel/core": "^7.2.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
-    "eslint": "^5.6.1",
+    "eslint": "^5.13.0",
+    "eslint-config-airbnb-base": "^13.1.0",
     "eslint-config-standard": "^12.0.0",
-    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-import": "^2.16.0",
     "eslint-plugin-node": "^7.0.1",
     "eslint-plugin-promise": "^4.0.1",
     "eslint-plugin-standard": "^4.0.0",

@@ -1,28 +1,28 @@
 // ####### Declarations ##########
-const h = require('../vendors/snabbdom/h.js')
-const patch = require('../vendors/snabbdom/patch.js')
-const { defaultsDeepPreserveArrays, divideByProps } = require('../utils/helpers.js')
-const { defaultsDeep, forEach, map, last, uniq, includes, concat, toArray, mergeWith, isFunction, isArray } = require('lodash')
+const h = require('../vendors/snabbdom/h.js');
+const patch = require('../vendors/snabbdom/patch.js');
+const { defaultsDeepPreserveArrays, divideByProps } = require('../utils/helpers.js');
+const { defaultsDeep, forEach, map, last, uniq, includes, concat, isFunction, isArray } = require('lodash');
 
 // ####### Defaults ##########
 
-const CONSTS = {
-  ACTION: {}
-}
+const DEFAULT_CONSTS = {
+  ACTION: {},
+};
 
-const state = {
+const defaultState = {
   data: null,
-  wait: false
-}
+  wait: false,
+};
 
 const defaultParams = {
   key: null,
   render: null,
   async: false, // If true, component will be returned as a promise
   reducer: null,
-  state: { ...state },
+  state: { ...defaultState },
   ejectComponent: false, // If true, component will return object with actions and elm
-  CONSTS: { ...CONSTS },
+  CONSTS: { ...DEFAULT_CONSTS },
   shouldComponentUpdate: true,
   componentDidInit: null,
   componentWillInit: null,
@@ -35,113 +35,115 @@ const defaultParams = {
   componentWillPrepatch: null,
   componentWillPostpatch: null,
   componentDidCreateViewObject: null,
-  componentWillCreateViewObject: null
-}
+  componentWillCreateViewObject: null,
+};
 
 // ######## Actions ###########
 
 const actions = (viewObject) => {
-  const items = divideByProps(viewObject.params, defaultParams)[0]
+  const items = divideByProps(viewObject.params, defaultParams)[0];
 
-  console.log(items)
+  forEach(items, (item, name) => {
+    if (isFunction(item)) {
+      items[name] = (...args) => item(...args, viewObject.actions.state, viewObject.actions);
+    }
+  });
 
-  const getState = () => {
-    return viewObject.actions.state
-  }
+  const getState = () => viewObject.actions.state;
 
   const setState = (newState = {}, callback = null, updateView = true) => {
-    console.log('Setting new state...')
+    console.log('Setting new state...');
 
-    let state = newState
-    let shouldComponentUpdate = true
+    let state = newState;
+    let shouldComponentUpdate = true;
 
     if (isFunction(newState)) {
-      state = newState(viewObject.actions.state)
+      state = newState(viewObject.actions.state);
     }
 
-    viewObject.actions.state = defaultsDeepPreserveArrays(state, viewObject.actions.state)
+    viewObject.actions.state = defaultsDeepPreserveArrays(state, viewObject.actions.state);
 
-    console.log('shouldComponentUpdate')
+    console.log('shouldComponentUpdate');
     if (isFunction(viewObject.actions.shouldComponentUpdate)) {
-      shouldComponentUpdate = !!viewObject.actions.shouldComponentUpdate(viewObject.actions.state, viewObject.actions)
+      shouldComponentUpdate = !!viewObject.actions.shouldComponentUpdate(viewObject.actions.state, viewObject.actions);
     } else {
-      shouldComponentUpdate = !!viewObject.actions.shouldComponentUpdate
+      shouldComponentUpdate = !!viewObject.actions.shouldComponentUpdate;
     }
 
     if (shouldComponentUpdate) {
       if (updateView) {
-        console.log('componentWillUpdate')
+        console.log('componentWillUpdate');
         if (viewObject.actions.componentWillUpdate) {
           if (isFunction(viewObject.actions.componentWillUpdate)) {
-            viewObject.actions.componentWillUpdate(viewObject.actions.state, viewObject.actions, viewObject)
+            viewObject.actions.componentWillUpdate(viewObject.actions.state, viewObject.actions, viewObject);
           }
         }
 
-        viewObject.nodes.view = patch(viewObject.nodes.view, viewObject.component.getViewComponent(viewObject.actions.state))
+        viewObject.nodes.view = patch(viewObject.nodes.view, viewObject.component.getViewComponent(viewObject.actions.state));
 
-        console.log('componentDidUpdate')
+        console.log('componentDidUpdate');
         if (viewObject.actions.componentDidUpdate) {
           if (isFunction(viewObject.actions.componentDidUpdate)) {
-            viewObject.actions.componentDidUpdate(viewObject.actions.state, viewObject.actions)
+            viewObject.actions.componentDidUpdate(viewObject.actions.state, viewObject.actions);
           }
         }
       }
     }
 
     if (isFunction(callback)) {
-      return callback(viewObject.actions.state, viewObject.actions)
+      return callback(viewObject.actions.state, viewObject.actions);
     }
 
-    return viewObject.actions.state
-  }
+    return viewObject.actions.state;
+  };
 
   const forceUpdate = () => {
-    setState()
-  }
+    setState();
+  };
 
   const remount = () => {
-    viewObject.nodes.view = patch(viewObject.nodes.view, createComponent(viewObject.params))
-  }
+    viewObject.nodes.view = patch(viewObject.nodes.view, createComponent(viewObject.params));
+  };
 
   const dispatch = (action = { type: null, payload: {} }) => {
     if (viewObject.actions.reducer && isFunction(viewObject.actions.reducer)) {
       setState((prevState) => {
-        let nextAction = action
+        let nextAction = action;
 
         if (isFunction(nextAction)) {
-          nextAction = nextAction(prevState)
+          nextAction = nextAction(prevState);
         }
 
-        return viewObject.actions.reducer(prevState, nextAction, viewObject.actions)
-      })
+        return viewObject.actions.reducer(prevState, nextAction, viewObject.actions);
+      });
     } else {
-      console.error('Please provide reducer function to use this functionality!')
+      console.error('Please provide reducer function to use this functionality!');
     }
-  }
+  };
 
   const useHook = (hook) => {
-    const [items, defs] = divideByProps(hook, defaultParams)
+    const [els, defs] = divideByProps(hook, defaultParams);
 
     forEach(defs, (d, k) => {
       if (!viewObject.hooks[k]) {
-        viewObject.hooks[k] = [viewObject.actions[k]]
+        viewObject.hooks[k] = [viewObject.actions[k]];
       }
 
-      viewObject.hooks[k].push(d)
-    })
+      viewObject.hooks[k].push(d);
+    });
 
-    forEach(items, (d, k) => {
-      if (!viewObject.hooks.items) {
-        viewObject.hooks.items = {}
+    forEach(els, (d, k) => {
+      if (!viewObject.hooks.els) {
+        viewObject.hooks.els = {};
       }
 
-      if (!viewObject.hooks.items[k]) {
-        viewObject.hooks.items[k] = [viewObject.actions.items[k]]
+      if (!viewObject.hooks.els[k]) {
+        viewObject.hooks.els[k] = [viewObject.actions.els[k]];
       }
 
-      viewObject.hooks.items[k].push(d)
-    })
-  }
+      viewObject.hooks.els[k].push(d);
+    });
+  };
 
   return {
     items,
@@ -151,249 +153,245 @@ const actions = (viewObject) => {
     getState,
     setState,
     forceUpdate,
-    ...viewObject.params
-  }
-}
+    ...viewObject.params,
+  };
+};
 
 const componentFn = (viewObject) => {
   const getViewComponent = (newState) => {
-    console.log('Getting view...')
+    console.log('Getting view...');
 
     if (viewObject.actions.render && isFunction(viewObject.actions.render)) {
-      let node = null
+      let node = null;
 
-      // try {
-      node = viewObject.actions.render(newState, viewObject.actions)
-      // } catch (error) {
-      //   throw new Error(error)
-      // }
+      node = viewObject.actions.render(newState, viewObject.actions);
 
       if (!node) {
-        return h('div', "It's looks like you're render function does not return any value!")
+        return h('div', "It's looks like you're render function does not return any value!");
       }
 
-      return node
+      return node;
     }
 
-    return h('div', 'Nothing to render')
-  }
+    return h('div', 'Nothing to render');
+  };
 
   const getViewContext = () => {
-    console.log('Finding view context...')
+    console.log('Finding view context...');
 
-    console.log('View context found: `render()` result')
-    return getViewComponent(viewObject.actions.state)
-  }
+    console.log('View context found: `render()` result');
+    return getViewComponent(viewObject.actions.state);
+  };
 
   const profileHook = (hook) => {
-    const types = uniq(map(hook, h => {
-      const type = typeof h
+    const types = uniq(map(hook, (hk) => {
+      const type = typeof hk;
 
       if (type !== 'object') {
-        return type
+        return type;
       }
 
-      if (isArray(h)) {
-        return 'array'
+      if (isArray(hk)) {
+        return 'array';
       }
-    }))
+    }));
 
     if (includes(types, 'function')) {
-      return 'function'
+      return 'function';
     }
 
     if (includes(types, 'string')) {
-      return 'string'
+      return 'string';
     }
 
     if (includes(types, 'number')) {
-      return 'number'
+      return 'number';
     }
 
     if (includes(types, 'boolean')) {
-      return 'boolean'
+      return 'boolean';
     }
 
     if (includes(types, 'array')) {
-      return 'array'
+      return 'array';
     }
 
-    return 'object'
-  }
+    return 'object';
+  };
 
   const createCallStactReducer = (hook, name) => {
-    const profile = profileHook(hook)
+    const profile = profileHook(hook);
 
     if (profile === 'string' || profile === 'number' || profile === 'boolean') {
-      return last(hook)
+      return last(hook);
     }
 
     if (profile === 'array') {
-      return concat(...hook)
+      return concat(...hook);
     }
 
     if (profile === 'object') {
-      return defaultsDeepPreserveArrays(...hook)
+      return defaultsDeepPreserveArrays(...hook);
     }
 
     if (profile === 'function') {
       return function () {
-        const result = {}
-        let [state, component, action, ...rest] = arguments
+        const result = {};
+        let [state, component, action, ...rest] = arguments;
 
         if (name === 'reducer') {
-          const t = action
-          action = component
-          component = t
+          const t = action;
+          action = component;
+          component = t;
         }
 
         forEach(hook, (fn) => {
-          let cmpnt = { ...component }
+          const cmpnt = { ...component };
 
           if (result.hasOwnProperty(name)) {
-            cmpnt[name] = () => result[name]
+            cmpnt[name] = () => result[name];
           }
 
           if (name === 'reducer') {
-            result[name] = isFunction(fn) ? fn(state, action, cmpnt, ...rest) : fn
+            result[name] = isFunction(fn) ? fn(state, action, cmpnt, ...rest) : fn;
           } else {
-            result[name] = isFunction(fn) ? fn(state, cmpnt, action, ...rest) : fn
+            result[name] = isFunction(fn) ? fn(state, cmpnt, action, ...rest) : fn;
           }
-        })
+        });
 
-        return result[name]
-      }
+        return result[name];
+      };
     }
-  }
+  };
 
   const registerHooks = () => {
     forEach(viewObject.hooks, (hook, name) => {
       if (name === 'items') {
         if (!viewObject.actions.items) {
-          viewObject.actions.items = {}
+          viewObject.actions.items = {};
         }
 
-        forEach(hook, (h, n) => {
-          viewObject.actions.items[n] = createCallStactReducer(h, n)
-        })
+        forEach(hook, (hk, n) => {
+          viewObject.actions.items[n] = createCallStactReducer(hk, n);
+        });
       } else {
-        viewObject.actions[name] = createCallStactReducer(hook, name)
+        viewObject.actions[name] = createCallStactReducer(hook, name);
       }
-    })
-  }
+    });
+  };
 
   return {
     getViewComponent,
     getViewContext,
-    registerHooks
-  }
-}
+    registerHooks,
+  };
+};
 
 // ########### Composing View ###########
 
 const createComponent = (params = defaultParams) => {
-  defaultsDeep(params, defaultParams)
+  defaultsDeep(params, defaultParams);
 
-  params.state = isFunction(params.state) ? params.state(params) : params.state
+  params.state = isFunction(params.state) ? params.state(params) : params.state;
 
   if (params.componentWillCreateViewObject && isFunction(params.componentWillCreateViewObject)) {
-    console.log('componentWillCreateViewObject')
-    params.componentWillCreateViewObject(params.state)
+    console.log('componentWillCreateViewObject');
+    params.componentWillCreateViewObject(params.state);
   }
 
   const viewObject = {
     hooks: {},
     actions: null,
-    params: params,
+    params,
     component: null,
     nodes: {
-      view: null
-    }
-  }
+      view: null,
+    },
+  };
 
-  viewObject.actions = actions(viewObject)
-  viewObject.component = componentFn(viewObject)
+  viewObject.actions = actions(viewObject);
+  viewObject.component = componentFn(viewObject);
 
   if (viewObject.actions.componentWillInit && isFunction(viewObject.actions.componentWillInit)) {
-    console.log('componentWillInit')
-    viewObject.actions.componentWillInit(viewObject.actions.state, viewObject.actions)
+    console.log('componentWillInit');
+    viewObject.actions.componentWillInit(viewObject.actions.state, viewObject.actions);
   }
 
-  viewObject.component.registerHooks()
+  viewObject.component.registerHooks();
 
-  viewObject.nodes.view = viewObject.component.getViewContext()
-  viewObject.nodes.view.key = params.key
+  viewObject.nodes.view = viewObject.component.getViewContext();
+  viewObject.nodes.view.key = params.key;
 
   viewObject.nodes.view.data = {
     ...viewObject.nodes.view.data,
     hook: {
       init: () => {
-        console.log('init')
+        console.log('init');
         if (viewObject.actions.componentDidInit && isFunction(viewObject.actions.componentDidInit)) {
-          viewObject.actions.componentDidInit(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentDidInit(viewObject.actions.state, viewObject.actions);
         }
       },
       create: () => {
-        console.log('componentWillMount')
+        console.log('componentWillMount');
         if (viewObject.actions.componentWillMount && isFunction(viewObject.actions.componentWillMount)) {
-          viewObject.actions.componentWillMount(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentWillMount(viewObject.actions.state, viewObject.actions);
         }
       },
       prepatch: () => {
-        console.log('prepatch')
+        console.log('prepatch');
         if (viewObject.actions.componentWillPrepatch && isFunction(viewObject.actions.componentWillPrepatch)) {
-          viewObject.actions.componentWillPrepatch(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentWillPrepatch(viewObject.actions.state, viewObject.actions);
         }
       },
       postpatch: () => {
-        console.log('postpatch')
+        console.log('postpatch');
         if (viewObject.actions.componentWillPostpatch && isFunction(viewObject.actions.componentWillPostpatch)) {
-          viewObject.actions.componentWillPostpatch(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentWillPostpatch(viewObject.actions.state, viewObject.actions);
         }
       },
       insert: () => {
-        console.log('componentDidMount')
+        console.log('componentDidMount');
         if (viewObject.actions.componentDidMount && isFunction(viewObject.actions.componentDidMount)) {
-          viewObject.actions.componentDidMount(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentDidMount(viewObject.actions.state, viewObject.actions);
         }
       },
       destroy: () => {
-        console.log('componentWillUnmount')
+        console.log('componentWillUnmount');
         if (viewObject.actions.componentWillUnmount && isFunction(viewObject.actions.componentWillUnmount)) {
-          viewObject.actions.componentWillUnmount(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentWillUnmount(viewObject.actions.state, viewObject.actions);
         }
       },
       remove: (vnode, removeCallback) => {
-        console.log('componentDidUnmount')
+        console.log('componentDidUnmount');
         if (viewObject.actions.componentDidUnmount && isFunction(viewObject.actions.componentDidUnmount)) {
-          viewObject.actions.componentDidUnmount(viewObject.actions.state, viewObject.actions)
+          viewObject.actions.componentDidUnmount(viewObject.actions.state, viewObject.actions);
         }
 
-        return removeCallback()
-      }
-    }
-  }
+        return removeCallback();
+      },
+    },
+  };
 
   if (viewObject.actions.componentDidCreateViewObject && isFunction(viewObject.actions.componentDidCreateViewObject)) {
-    console.log('componentDidCreateViewObject')
-    viewObject.actions.componentDidCreateViewObject(viewObject.actions.state, viewObject.actions)
+    console.log('componentDidCreateViewObject');
+    viewObject.actions.componentDidCreateViewObject(viewObject.actions.state, viewObject.actions);
   }
 
   if (viewObject.actions.async) {
     if (viewObject.actions.ejectComponent) {
-      return Promise.resolve(viewObject)
+      return Promise.resolve(viewObject);
     }
 
-    return Promise.resolve(viewObject.nodes.view)
+    return Promise.resolve(viewObject.nodes.view);
   }
 
   if (viewObject.actions.ejectComponent) {
-    return viewObject
+    return viewObject;
   }
 
-  return viewObject.nodes.view
-}
+  return viewObject.nodes.view;
+};
 
 // ######### Export ###########
 
-module.exports = createComponent
+module.exports = createComponent;

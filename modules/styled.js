@@ -1,79 +1,75 @@
 // ####### Declarations ##########
-const h = require('../vendors/snabbdom/h.js')
-const cssToJS = require('../utils/cssToJS.js')
-const { forEach, isArray, isString, has } = require('lodash')
-const { mergeWithFn, ss } = require('../utils/helpers.js')
-const { isVNode } = require('../utils/vDomHelpers.js')
+const h = require('../vendors/snabbdom/h.js');
+const cssToJS = require('../utils/cssToJS.js');
+const { forEach, isArray, isString, has } = require('lodash');
+const { mergeWithFn, ss } = require('../utils/helpers.js');
+const { isVNode } = require('../utils/vDomHelpers.js');
 
 // ####### Helpers ##########
 const getVNode = (sel = 'div', literals, ...expressions) => (data = {}, children) => {
-  const style = cssWithProps(data.styled)(literals, ...expressions)
-  const defprops = { style, styledProps: { css: cssWithPropsPlain(data.styled)(literals, ...expressions) } }
+  const style = cssWithProps(data.styled)(literals, ...expressions);
+  const defprops = { style, styledProps: { css: cssWithPropsPlain(data.styled)(literals, ...expressions) } };
 
   if (!children && (isVNode(data) || isArray(data) || isString(data))) {
-    return h(sel, defprops, data)
+    return h(sel, defprops, data);
   }
 
-  return h(sel, mergeWithFn(defprops, data), children)
-}
+  return h(sel, mergeWithFn(defprops, data), children);
+};
 
 const execFuncArgs = (arg, props) => {
   if (typeof arg === 'function') {
     if (getVNode().toString() === arg.toString()) {
-      const vnode = arg()
+      const vnode = arg();
 
       if (has(vnode, 'data.styledProps.css')) {
-        return vnode.data.styledProps.css
+        return vnode.data.styledProps.css;
       }
 
-      throw new Error('Cannot get property data.styledProps.css of given Vnode. Are you sure you passed styled component?')
+      throw new Error('Cannot get property data.styledProps.css of given Vnode. Are you sure you passed styled component?');
     }
 
     if (props) {
-      return ss(arg(props))
+      return ss(arg(props));
     }
 
-    return ss(arg())
+    return ss(arg());
   }
 
-  return arg
-}
+  return arg;
+};
 
 const css = (literals, ...expressions) => {
-  let styles = ``
+  let styles = '';
 
   forEach(literals, (literal, i) => {
     if (expressions[i]) {
-      styles += `${literal}${execFuncArgs(expressions[i])}`
+      styles += `${literal}${execFuncArgs(expressions[i])}`;
     } else {
-      styles += literal
+      styles += literal;
     }
-  })
+  });
 
-  return cssToJS(styles)
-}
+  return cssToJS(styles);
+};
 
-const cssWithPropsPlain = (props) => (literals, ...expressions) => {
-  let styles = ``
+const cssWithPropsPlain = props => (literals, ...expressions) => {
+  let styles = '';
 
   forEach(literals, (literal, i) => {
     if (expressions[i]) {
-      styles += `${literal}${execFuncArgs(expressions[i], props || {})}`
+      styles += `${literal}${execFuncArgs(expressions[i], props || {})}`;
     } else {
-      styles += literal
+      styles += literal;
     }
-  })
+  });
 
-  return styles
-}
+  return styles;
+};
 
-const cssWithProps = (props) => (literals, ...expressions) => {
-  return cssToJS(cssWithPropsPlain(props)(literals, ...expressions))
-}
+const cssWithProps = props => (literals, ...expressions) => cssToJS(cssWithPropsPlain(props)(literals, ...expressions));
 
-const selector = (sel = 'div', literals, ...expressions) => {
-  return getVNode(sel, literals, ...expressions)
-}
+const selector = (sel = 'div', literals, ...expressions) => getVNode(sel, literals, ...expressions);
 
 // ########### Composing export ###########
 const styled = {
@@ -190,8 +186,8 @@ const styled = {
   ul: (literals, ...expressions) => selector('ul', literals, ...expressions),
   var: (literals, ...expressions) => selector('var', literals, ...expressions),
   video: (literals, ...expressions) => selector('video', literals, ...expressions),
-  wbr: (literals, ...expressions) => selector('wbr', literals, ...expressions)
-}
+  wbr: (literals, ...expressions) => selector('wbr', literals, ...expressions),
+};
 
 // ########### Export ###########
-module.exports = { styled, css, cssWithProps, cssWithPropsPlain }
+module.exports = { styled, css, cssWithProps, cssWithPropsPlain };

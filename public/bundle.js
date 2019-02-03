@@ -17636,44 +17636,6 @@
   }.call(commonjsGlobal));
   });
 
-  const { isFunction, isArray, isString } = lodash;
-
-  const getLoader = (waitComponent) => {
-    let loader = waitComponent;
-
-    if (isFunction(loader)) {
-      loader = loader();
-
-      if (!isArray(loader)) {
-        loader = [loader];
-      }
-    }
-
-    if (!isString(loader) && !isArray(loader)) {
-      loader = [loader];
-    }
-
-    return loader
-  };
-
-  const getKey = function() {
-    return Math.random().toString(36).substr(2, 9) + '.' + Math.random().toString(36).substr(2, 9)
-  };
-
-  const lazy = (lazyComponent, waitComponent) => {
-    return (params) => h('div', {
-      key: getKey(),
-      hook: {
-        insert: async (vnode) => {
-          const view = await lazyComponent(params);
-          patch(vnode, view);
-        }
-      }
-    }, getLoader(waitComponent))
-  };
-
-  var lazy_1 = lazy;
-
   /**
    * Removes all key-value entries from the list cache.
    *
@@ -21951,29 +21913,27 @@
       return (...args) => {
         objValue(...args);
         srcValue(...args);
-      }
+      };
     }
   };
 
   const mergeWithFn = (object, source) => mergeWith_1(object, source, mergeWithFnCustomizer);
 
   const getPropertyByCaseInsensitiveKey = (o = {}, n = '') => {
-    const k = findKey_1(o, (v, p) => {
-      return p.toLowerCase() === n.toLowerCase()
-    });
+    const k = findKey_1(o, (v, p) => p.toLowerCase() === n.toLowerCase());
 
-    return o[k]
+    return o[k];
   };
 
   const differenceDeep = (object, base) => {
-    function changes (object, base) {
-      return transform_1(object, function (result, value, key) {
+    function changes(object, base) {
+      return transform_1(object, (result, value, key) => {
         if (!isEqual_1(value, base[key])) {
           result[key] = (isObject_1(value) && isObject_1(base[key])) ? changes(value, base[key]) : value;
         }
-      })
+      });
     }
-    return changes(object, base)
+    return changes(object, base);
   };
 
   const divideByProps = (object, base) => {
@@ -21988,20 +21948,19 @@
       }
     });
 
-    return [items, rest]
+    return [items, rest];
   };
 
   function defaultsDeepPreserveArrays() {
     let output = {};
 
-    toArray_1(arguments).reverse().forEach(item => {
-      mergeWith_1(output, item, (objectValue, sourceValue) => {
-        return isArray_1(sourceValue) ? sourceValue : undefined
-      });
+    toArray_1(arguments).reverse().forEach((item) => {
+      mergeWith_1(output, item, (objectValue, sourceValue) => (isArray_1(sourceValue) ? sourceValue : undefined));
     });
 
-    return output
+    return output;
   }
+
   const so = (obj, dv) => (obj || dv || {});
 
   const sa = (arr, dv) => (arr || dv || []);
@@ -22032,17 +21991,17 @@
 
 
   const { defaultsDeepPreserveArrays: defaultsDeepPreserveArrays$1, divideByProps: divideByProps$1 } = helpers;
-  const { defaultsDeep, forEach: forEach$1, map, last, uniq, includes, concat, toArray: toArray$1, mergeWith: mergeWith$1, isFunction: isFunction$2, isArray: isArray$2 } = lodash;
+  const { defaultsDeep, forEach: forEach$1, map, last, uniq, includes, concat, isFunction: isFunction$2, isArray: isArray$2 } = lodash;
 
   // ####### Defaults ##########
 
-  const CONSTS = {
-    ACTION: {}
+  const DEFAULT_CONSTS = {
+    ACTION: {},
   };
 
-  const state = {
+  const defaultState = {
     data: null,
-    wait: false
+    wait: false,
   };
 
   const defaultParams = {
@@ -22050,9 +22009,9 @@
     render: null,
     async: false, // If true, component will be returned as a promise
     reducer: null,
-    state: { ...state },
+    state: { ...defaultState },
     ejectComponent: false, // If true, component will return object with actions and elm
-    CONSTS: { ...CONSTS },
+    CONSTS: { ...DEFAULT_CONSTS },
     shouldComponentUpdate: true,
     componentDidInit: null,
     componentWillInit: null,
@@ -22065,7 +22024,7 @@
     componentWillPrepatch: null,
     componentWillPostpatch: null,
     componentDidCreateViewObject: null,
-    componentWillCreateViewObject: null
+    componentWillCreateViewObject: null,
   };
 
   // ######## Actions ###########
@@ -22073,11 +22032,13 @@
   const actions = (viewObject) => {
     const items = divideByProps$1(viewObject.params, defaultParams)[0];
 
-    console.log(items);
+    forEach$1(items, (item, name) => {
+      if (isFunction$2(item)) {
+        items[name] = (...args) => item(...args, viewObject.actions.state, viewObject.actions);
+      }
+    });
 
-    const getState = () => {
-      return viewObject.actions.state
-    };
+    const getState = () => viewObject.actions.state;
 
     const setState = (newState = {}, callback = null, updateView = true) => {
       console.log('Setting new state...');
@@ -22119,10 +22080,10 @@
       }
 
       if (isFunction$2(callback)) {
-        return callback(viewObject.actions.state, viewObject.actions)
+        return callback(viewObject.actions.state, viewObject.actions);
       }
 
-      return viewObject.actions.state
+      return viewObject.actions.state;
     };
 
     const forceUpdate = () => {
@@ -22142,7 +22103,7 @@
             nextAction = nextAction(prevState);
           }
 
-          return viewObject.actions.reducer(prevState, nextAction, viewObject.actions)
+          return viewObject.actions.reducer(prevState, nextAction, viewObject.actions);
         });
       } else {
         console.error('Please provide reducer function to use this functionality!');
@@ -22150,7 +22111,7 @@
     };
 
     const useHook = (hook) => {
-      const [items, defs] = divideByProps$1(hook, defaultParams);
+      const [els, defs] = divideByProps$1(hook, defaultParams);
 
       forEach$1(defs, (d, k) => {
         if (!viewObject.hooks[k]) {
@@ -22160,16 +22121,16 @@
         viewObject.hooks[k].push(d);
       });
 
-      forEach$1(items, (d, k) => {
-        if (!viewObject.hooks.items) {
-          viewObject.hooks.items = {};
+      forEach$1(els, (d, k) => {
+        if (!viewObject.hooks.els) {
+          viewObject.hooks.els = {};
         }
 
-        if (!viewObject.hooks.items[k]) {
-          viewObject.hooks.items[k] = [viewObject.actions.items[k]];
+        if (!viewObject.hooks.els[k]) {
+          viewObject.hooks.els[k] = [viewObject.actions.els[k]];
         }
 
-        viewObject.hooks.items[k].push(d);
+        viewObject.hooks.els[k].push(d);
       });
     };
 
@@ -22181,8 +22142,8 @@
       getState,
       setState,
       forceUpdate,
-      ...viewObject.params
-    }
+      ...viewObject.params,
+    };
   };
 
   const componentFn = (viewObject) => {
@@ -22192,78 +22153,74 @@
       if (viewObject.actions.render && isFunction$2(viewObject.actions.render)) {
         let node = null;
 
-        // try {
         node = viewObject.actions.render(newState, viewObject.actions);
-        // } catch (error) {
-        //   throw new Error(error)
-        // }
 
         if (!node) {
-          return h('div', "It's looks like you're render function does not return any value!")
+          return h('div', "It's looks like you're render function does not return any value!");
         }
 
-        return node
+        return node;
       }
 
-      return h('div', 'Nothing to render')
+      return h('div', 'Nothing to render');
     };
 
     const getViewContext = () => {
       console.log('Finding view context...');
 
       console.log('View context found: `render()` result');
-      return getViewComponent(viewObject.actions.state)
+      return getViewComponent(viewObject.actions.state);
     };
 
     const profileHook = (hook) => {
-      const types = uniq(map(hook, h$$1 => {
-        const type = typeof h$$1;
+      const types = uniq(map(hook, (hk) => {
+        const type = typeof hk;
 
         if (type !== 'object') {
-          return type
+          return type;
         }
 
-        if (isArray$2(h$$1)) {
-          return 'array'
+        if (isArray$2(hk)) {
+          return 'array';
         }
       }));
 
       if (includes(types, 'function')) {
-        return 'function'
+        return 'function';
       }
 
       if (includes(types, 'string')) {
-        return 'string'
+        return 'string';
       }
 
       if (includes(types, 'number')) {
-        return 'number'
+        return 'number';
       }
 
       if (includes(types, 'boolean')) {
-        return 'boolean'
+        return 'boolean';
       }
 
       if (includes(types, 'array')) {
-        return 'array'
+        return 'array';
       }
 
-      return 'object'
+      return 'object';
     };
 
     const createCallStactReducer = (hook, name) => {
       const profile = profileHook(hook);
 
       if (profile === 'string' || profile === 'number' || profile === 'boolean') {
-        return last(hook)
+        return last(hook);
       }
 
       if (profile === 'array') {
-        return concat(...hook)
+        return concat(...hook);
       }
 
       if (profile === 'object') {
-        return defaultsDeepPreserveArrays$1(...hook)
+        return defaultsDeepPreserveArrays$1(...hook);
       }
 
       if (profile === 'function') {
@@ -22278,7 +22235,7 @@
           }
 
           forEach$1(hook, (fn) => {
-            let cmpnt = { ...component };
+            const cmpnt = { ...component };
 
             if (result.hasOwnProperty(name)) {
               cmpnt[name] = () => result[name];
@@ -22291,8 +22248,8 @@
             }
           });
 
-          return result[name]
-        }
+          return result[name];
+        };
       }
     };
 
@@ -22303,8 +22260,8 @@
             viewObject.actions.items = {};
           }
 
-          forEach$1(hook, (h$$1, n) => {
-            viewObject.actions.items[n] = createCallStactReducer(h$$1, n);
+          forEach$1(hook, (hk, n) => {
+            viewObject.actions.items[n] = createCallStactReducer(hk, n);
           });
         } else {
           viewObject.actions[name] = createCallStactReducer(hook, name);
@@ -22315,8 +22272,8 @@
     return {
       getViewComponent,
       getViewContext,
-      registerHooks
-    }
+      registerHooks,
+    };
   };
 
   // ########### Composing View ###########
@@ -22334,11 +22291,11 @@
     const viewObject = {
       hooks: {},
       actions: null,
-      params: params,
+      params,
       component: null,
       nodes: {
-        view: null
-      }
+        view: null,
+      },
     };
 
     viewObject.actions = actions(viewObject);
@@ -22399,9 +22356,9 @@
             viewObject.actions.componentDidUnmount(viewObject.actions.state, viewObject.actions);
           }
 
-          return removeCallback()
-        }
-      }
+          return removeCallback();
+        },
+      },
     };
 
     if (viewObject.actions.componentDidCreateViewObject && isFunction$2(viewObject.actions.componentDidCreateViewObject)) {
@@ -22411,975 +22368,40 @@
 
     if (viewObject.actions.async) {
       if (viewObject.actions.ejectComponent) {
-        return Promise.resolve(viewObject)
+        return Promise.resolve(viewObject);
       }
 
-      return Promise.resolve(viewObject.nodes.view)
+      return Promise.resolve(viewObject.nodes.view);
     }
 
     if (viewObject.actions.ejectComponent) {
-      return viewObject
+      return viewObject;
     }
 
-    return viewObject.nodes.view
+    return viewObject.nodes.view;
   };
 
   // ######### Export ###########
 
   var component = createComponent;
 
-  // ####### Declarations ##########
-
-
-  const { defaultsDeepPreserveArrays: defaultsDeepPreserveArrays$2, divideByProps: divideByProps$2 } = helpers;
-  const { defaultsDeep: defaultsDeep$1, forEach: forEach$2, map: map$1, last: last$1, uniq: uniq$1, includes: includes$1, concat: concat$1, isFunction: isFunction$3, isArray: isArray$3 } = lodash;
-
-
-  // ####### Defaults ##########
-
-  const CONSTS$1 = {
-    ACTION: {}
-  };
-
-  const state$1 = {
-    data: null,
-    wait: false
-  };
-
-  const defaultParams$1 = {
-    key: null,
-    render: null,
-    async: false, // If true, component will be returned as a promise
-    reducer: null,
-    spinner: false,
-    state: { ...state$1 },
-    delaySpinner: false, // If true, component spinner will appear with delay (for fast internet connection spinner will not be shown)
-    ejectComponent: false, // If true, component will return object with actions and elm
-    CONSTS: { ...CONSTS$1 },
-    componentDidInit: null,
-    componentWillInit: null,
-    componentDidMount: null,
-    componentWillMount: null,
-    componentDidUpdate: null,
-    componentDidUnmount: null,
-    componentWillUpdate: null,
-    componentWillUnmount: null,
-    shouldComponentUpdate: true,
-    componentWillPrepatch: null,
-    componentWillPostpatch: null,
-    componentWillUpdateVNode: null,
-    componentDidCreateViewObject: null,
-    componentWillCreateViewObject: null
-  };
-
-  // ####### Component Helpers ##########
-
-  const loader = (params = {}) => {
-    const { delaySpinner } = params;
-
-    const s = delaySpinner ? {
-      style: {
-        WebkitAnimationDuration: '0.5s',
-        WebkitAnimationFillMode: 'both',
-        WebkitAnimationDelay: '0.3s',
-        WebkitAnimationName: 'fadeIn',
-        animationDuration: '0.5s',
-        animationFillMode: 'both',
-        animationDelay: '0.3s',
-        animationName: 'fadeIn'
-      }
-    } : {};
-
-    return h('div', {
-      style: {
-        display: 'block',
-        opacyty: '0',
-        height: '32px',
-        padding: '10px'
-      },
-      key: 'loader',
-      ...s,
-      ...params.loaderData
-    }, 'loading...')
-  };
-
-  // ######## Actions ###########
-
-  const actions$1 = (viewObject) => {
-    const items = divideByProps$2(viewObject.params, defaultParams$1)[0];
-
-    const getState = () => {
-      return viewObject.actions.state
-    };
-
-    const setState = async (newState = {}, callback = null, updateView = true) => {
-      console.log('Setting new state...');
-
-      let state = newState;
-      let shouldComponentUpdate = true;
-
-      if (isFunction$3(newState)) {
-        state = await newState(viewObject.actions.state);
-      }
-
-      viewObject.actions.state = defaultsDeepPreserveArrays$2(state, viewObject.actions.state);
-
-      console.log('shouldComponentUpdate');
-      if (isFunction$3(viewObject.actions.shouldComponentUpdate)) {
-        shouldComponentUpdate = await !!viewObject.actions.shouldComponentUpdate(viewObject.actions.state, viewObject.actions);
-      } else {
-        shouldComponentUpdate = !!viewObject.actions.shouldComponentUpdate;
-      }
-
-      if (shouldComponentUpdate) {
-        if (updateView) {
-          console.log('componentWillUpdate');
-          if (viewObject.actions.componentWillUpdate && isFunction$3(viewObject.actions.componentWillUpdate)) {
-            await viewObject.actions.componentWillUpdate(viewObject.actions.state, viewObject.actions, viewObject);
-          }
-
-          viewObject.nodes.view = patch(viewObject.nodes.view, viewObject.component.getViewComponent(viewObject.actions.state));
-
-          console.log('componentDidUpdate');
-          if (viewObject.actions.componentDidUpdate && isFunction$3(viewObject.actions.componentDidUpdate)) {
-            await viewObject.actions.componentDidUpdate(viewObject.actions.state, viewObject.actions);
-          }
-        }
-      }
-
-      if (isFunction$3(callback)) {
-        return callback(viewObject.actions.state, viewObject.actions)
-      }
-
-      return viewObject.actions.state
-    };
-
-    const forceUpdate = () => {
-      setState();
-    };
-
-    const remount = () => {
-      viewObject.nodes.view = patch(viewObject.nodes.view, createAsyncComponent(viewObject.params));
-    };
-
-    const dispatch = (action = { type: null, payload: {} }) => {
-      if (viewObject.actions.reducer && isFunction$3(viewObject.actions.reducer)) {
-        setState(async (prevState) => {
-          let nextAction = action;
-
-          if (isFunction$3(nextAction)) {
-            nextAction = nextAction(prevState);
-          }
-
-          const result = await viewObject.actions.reducer(prevState, nextAction, viewObject.actions);
-
-          return result
-        });
-      } else {
-        console.error('Please provide reducer function to use this functionality!');
-      }
-    };
-
-    const useHook = (hook) => {
-      const [items, defs] = divideByProps$2(hook, defaultParams$1);
-
-      forEach$2(defs, (d, k) => {
-        if (!viewObject.hooks[k]) {
-          viewObject.hooks[k] = [viewObject.actions[k]];
-        }
-
-        viewObject.hooks[k].push(d);
-      });
-
-      forEach$2(items, (d, k) => {
-        if (!viewObject.hooks.items) {
-          viewObject.hooks.items = {};
-        }
-
-        if (!viewObject.hooks.items[k]) {
-          viewObject.hooks.items[k] = [viewObject.actions.items[k]];
-        }
-
-        viewObject.hooks.items[k].push(d);
-      });
-    };
-
-    const getLoader = () => loader(viewObject.params);
-
-    return {
-      items,
-      useHook,
-      remount,
-      dispatch,
-      getState,
-      setState,
-      getLoader,
-      forceUpdate,
-      ...viewObject.params
-    }
-  };
-
-  const componentFn$1 = (viewObject) => {
-    const getViewComponent = (newState) => {
-      console.log('Getting view...');
-
-      if (viewObject.actions.render && isFunction$3(viewObject.actions.render)) {
-        let node = null;
-
-        // try {
-        node = viewObject.actions.render(newState, viewObject.actions);
-        // } catch (error) {
-        //   throw new Error(error)
-        // }
-
-        if (!node) {
-          return h('div', "It's looks like you're render function does not return any value!")
-        }
-
-        return node
-      }
-
-      return h('div', 'Nothing to render')
-    };
-
-    const getViewContext = () => {
-      console.log('Finding view context...');
-
-      if (viewObject.actions.spinner) {
-        console.log('View context found: Spinner');
-        return loader(viewObject.actions)
-      }
-
-      console.log('View context found: `render()` result');
-      return getViewComponent(viewObject.actions.state)
-    };
-
-    const profileHook = (hook) => {
-      const types = uniq$1(map$1(hook, h$$1 => {
-        const type = typeof h$$1;
-
-        if (type !== 'object') {
-          return type
-        }
-
-        if (isArray$3(h$$1)) {
-          return 'array'
-        }
-      }));
-
-      if (includes$1(types, 'function')) {
-        return 'function'
-      }
-
-      if (includes$1(types, 'string')) {
-        return 'string'
-      }
-
-      if (includes$1(types, 'number')) {
-        return 'number'
-      }
-
-      if (includes$1(types, 'boolean')) {
-        return 'boolean'
-      }
-
-      if (includes$1(types, 'array')) {
-        return 'array'
-      }
-
-      return 'object'
-    };
-
-    const createCallStactReducer = (hook, name) => {
-      const profile = profileHook(hook);
-
-      if (profile === 'string' || profile === 'number' || profile === 'boolean') {
-        return last$1(hook)
-      }
-
-      if (profile === 'array') {
-        return concat$1(...hook)
-      }
-
-      if (profile === 'object') {
-        return defaultsDeepPreserveArrays$2(...hook)
-      }
-
-      if (profile === 'function') {
-        return function () {
-          const result = {};
-          let [state, component, action, ...rest] = arguments;
-
-          if (name === 'reducer') {
-            const t = action;
-            action = component;
-            component = t;
-          }
-
-          forEach$2(hook, (fn) => {
-            let cmpnt = { ...component };
-
-            if (result.hasOwnProperty(name)) {
-              cmpnt[name] = () => result[name];
-            }
-
-            if (name === 'reducer') {
-              result[name] = isFunction$3(fn) ? fn(state, action, cmpnt, ...rest) : fn;
-            } else {
-              result[name] = isFunction$3(fn) ? fn(state, cmpnt, action, ...rest) : fn;
-            }
-          });
-
-          return result[name]
-        }
-      }
-    };
-
-    const registerHooks = () => {
-      forEach$2(viewObject.hooks, (hook, name) => {
-        if (name === 'items') {
-          if (!viewObject.actions.items) {
-            viewObject.actions.items = {};
-          }
-
-          forEach$2(hook, (h$$1, n) => {
-            viewObject.actions.items[n] = createCallStactReducer(h$$1, n);
-          });
-        } else {
-          viewObject.actions[name] = createCallStactReducer(hook, name);
-        }
-      });
-    };
-
-    return {
-      getViewComponent,
-      getViewContext,
-      registerHooks
-    }
-  };
-
-  // ########### Composing View ###########
-
-  const createAsyncComponent = async (params = defaultParams$1) => {
-    defaultsDeep$1(params, defaultParams$1);
-
-    if (isFunction$3(params.state)) {
-      params.state = await params.state(params);
-    }
-
-    if (params.componentWillCreateViewObject && isFunction$3(params.componentWillCreateViewObject)) {
-      console.log('componentWillCreateViewObject');
-      params.componentWillCreateViewObject(params.state);
-    }
-
-    const viewObject = {
-      hooks: {},
-      actions: null,
-      params: params,
-      component: null,
-      nodes: {
-        view: null
-      }
-    };
-
-    viewObject.actions = actions$1(viewObject);
-    viewObject.component = componentFn$1(viewObject);
-
-    if (viewObject.actions.componentWillInit && isFunction$3(viewObject.actions.componentWillInit)) {
-      console.log('componentWillInit');
-      viewObject.actions.componentWillInit(viewObject.actions.state, viewObject.actions);
-    }
-
-    viewObject.component.registerHooks();
-
-    viewObject.nodes.view = viewObject.component.getViewContext();
-    viewObject.nodes.view.key = params.key;
-
-    viewObject.nodes.view.data = {
-      ...viewObject.nodes.view.data,
-      hook: {
-        init: () => {
-          console.log('init');
-          if (viewObject.actions.componentDidInit && isFunction$3(viewObject.actions.componentDidInit)) {
-            viewObject.actions.componentDidInit(viewObject.actions.state, viewObject.actions);
-          }
-        },
-        create: () => {
-          console.log('componentWillMount');
-          if (viewObject.actions.componentWillMount && isFunction$3(viewObject.actions.componentWillMount)) {
-            viewObject.actions.componentWillMount(viewObject.actions.state, viewObject.actions);
-          }
-        },
-        prepatch: () => {
-          console.log('prepatch');
-          if (viewObject.actions.componentWillPrepatch && isFunction$3(viewObject.actions.componentWillPrepatch)) {
-            viewObject.actions.componentWillPrepatch(viewObject.actions.state, viewObject.actions);
-          }
-        },
-        // update: () => {
-        //   console.log('update')
-        //   if (viewObject.actions.componentWillUpdateVNode && isFunction(viewObject.actions.componentWillUpdateVNode)) {
-        //     viewObject.actions.componentWillUpdateVNode(viewObject.actions.state, viewObject.actions)
-        //   }
-        // },
-        postpatch: () => {
-          console.log('postpatch');
-          if (viewObject.actions.componentWillPostpatch && isFunction$3(viewObject.actions.componentWillPostpatch)) {
-            viewObject.actions.componentWillPostpatch(viewObject.actions.state, viewObject.actions);
-          }
-        },
-        insert: () => {
-          console.log('componentDidMount');
-          if (viewObject.actions.componentDidMount && isFunction$3(viewObject.actions.componentDidMount)) {
-            viewObject.actions.componentDidMount(viewObject.actions.state, viewObject.actions);
-          }
-        },
-        destroy: () => {
-          console.log('componentWillUnmount');
-          if (viewObject.actions.componentWillUnmount && isFunction$3(viewObject.actions.componentWillUnmount)) {
-            viewObject.actions.componentWillUnmount(viewObject.actions.state, viewObject.actions);
-          }
-        },
-        remove: (vnode, removeCallback) => {
-          console.log('componentDidUnmount');
-          if (viewObject.actions.componentDidUnmount && isFunction$3(viewObject.actions.componentDidUnmount)) {
-            viewObject.actions.componentDidUnmount(viewObject.actions.state, viewObject.actions);
-          }
-
-          return removeCallback()
-        }
-      }
-    };
-
-    if (viewObject.actions.componentDidCreateViewObject && isFunction$3(viewObject.actions.componentDidCreateViewObject)) {
-      console.log('componentDidCreateViewObject');
-      viewObject.actions.componentDidCreateViewObject(viewObject.actions.state, viewObject.actions);
-    }
-
-    if (viewObject.actions.async) {
-      if (viewObject.actions.ejectComponent) {
-        return Promise.resolve(viewObject)
-      }
-
-      return Promise.resolve(viewObject.nodes.view)
-    }
-
-    if (viewObject.actions.ejectComponent) {
-      return viewObject
-    }
-
-    return viewObject.nodes.view
-  };
-
-  // ######### Export ###########
-
-  var componentAsync = lazy_1(createAsyncComponent, loader);
-
-  function toProperty(name) {
-    if (name.charAt(0) === '-') name = name.slice(0);
-
-    return name.replace(/[^a-z0-9]([a-z0-9])?/gi, function(v, l) {
-      if (l) return l.toUpperCase()
-      return ''
-    })
-  }
-
-  function tokenizer(code) {
-    const whitespc = ['\r\n', '\n\r', '\n', '\r'];
-    const specialChars = ['{', '}', ':', ';'];
-    const specialCharsPB = ['{', '}', ';'];
-    const tokens = [];
-
-    let token = '';
-    let lastChar = '\0';
-    let nextChar = '\0';
-    let char = '\0';
-    let sc = null;
-    let inBrackets = false;
-
-    for (let i = 0; i < code.length; i++) {
-      if (i) lastChar = code.charAt(i - 1);
-      char = code.charAt(i);
-      if (i + 1 < code.length) nextChar = code.charAt(i + 1);
-
-      if (~whitespc.indexOf(char) && ~whitespc.indexOf(lastChar)) {
-        continue
-      }
-
-      sc = inBrackets ? specialChars : specialCharsPB;
-
-      if (~sc.indexOf(char)) {
-        if (char === '{') inBrackets = true;
-        if (char === '}') inBrackets = false;
-        tokens.push(token);
-        tokens.push(char);
-        token = '';
-        continue
-      }
-
-      token += char;
-    }
-
-    if (token) tokens.push(token);
-
-    const result = tokens
-      .map(function(token) {
-        return token.trim()
-      })
-      .filter(function(token) {
-        return token && token !== ';'
-      });
-
-    return result
-  }
-
-  var cssToJS = function(code) {
-    const tokens = tokenizer(code);
-    const props = {};
-
-    tokens.forEach((token) => {
-      let [prop, value] = token.split(':');
-      prop = props ? prop.trim() : '';
-      value = value ? value.trim() : '';
-
-      props[toProperty(prop)] = value;
-    });
-
-    return props
-  };
-
-  /**
-   * The base implementation of `_.map` without support for iteratee shorthands.
-   *
-   * @private
-   * @param {Array|Object} collection The collection to iterate over.
-   * @param {Function} iteratee The function invoked per iteration.
-   * @returns {Array} Returns the new mapped array.
-   */
-  function baseMap(collection, iteratee) {
-    var index = -1,
-        result = isArrayLike_1(collection) ? Array(collection.length) : [];
-
-    _baseEach(collection, function(value, key, collection) {
-      result[++index] = iteratee(value, key, collection);
-    });
-    return result;
-  }
-
-  var _baseMap = baseMap;
-
-  /**
-   * Creates an array of values by running each element in `collection` thru
-   * `iteratee`. The iteratee is invoked with three arguments:
-   * (value, index|key, collection).
-   *
-   * Many lodash methods are guarded to work as iteratees for methods like
-   * `_.every`, `_.filter`, `_.map`, `_.mapValues`, `_.reject`, and `_.some`.
-   *
-   * The guarded methods are:
-   * `ary`, `chunk`, `curry`, `curryRight`, `drop`, `dropRight`, `every`,
-   * `fill`, `invert`, `parseInt`, `random`, `range`, `rangeRight`, `repeat`,
-   * `sampleSize`, `slice`, `some`, `sortBy`, `split`, `take`, `takeRight`,
-   * `template`, `trim`, `trimEnd`, `trimStart`, and `words`
-   *
-   * @static
-   * @memberOf _
-   * @since 0.1.0
-   * @category Collection
-   * @param {Array|Object} collection The collection to iterate over.
-   * @param {Function} [iteratee=_.identity] The function invoked per iteration.
-   * @returns {Array} Returns the new mapped array.
-   * @example
-   *
-   * function square(n) {
-   *   return n * n;
-   * }
-   *
-   * _.map([4, 8], square);
-   * // => [16, 64]
-   *
-   * _.map({ 'a': 4, 'b': 8 }, square);
-   * // => [16, 64] (iteration order is not guaranteed)
-   *
-   * var users = [
-   *   { 'user': 'barney' },
-   *   { 'user': 'fred' }
-   * ];
-   *
-   * // The `_.property` iteratee shorthand.
-   * _.map(users, 'user');
-   * // => ['barney', 'fred']
-   */
-  function map$2(collection, iteratee) {
-    var func = isArray_1(collection) ? _arrayMap : _baseMap;
-    return func(collection, _baseIteratee(iteratee, 3));
-  }
-
-  var map_1 = map$2;
-
   /** Used for built-in method references. */
-  var objectProto$f = Object.prototype;
-
-  /** Used to check objects for own properties. */
-  var hasOwnProperty$c = objectProto$f.hasOwnProperty;
-
-  /**
-   * The base implementation of `_.has` without support for deep paths.
-   *
-   * @private
-   * @param {Object} [object] The object to query.
-   * @param {Array|string} key The key to check.
-   * @returns {boolean} Returns `true` if `key` exists, else `false`.
-   */
-  function baseHas(object, key) {
-    return object != null && hasOwnProperty$c.call(object, key);
-  }
-
-  var _baseHas = baseHas;
-
-  /**
-   * Checks if `path` is a direct property of `object`.
-   *
-   * @static
-   * @since 0.1.0
-   * @memberOf _
-   * @category Object
-   * @param {Object} object The object to query.
-   * @param {Array|string} path The path to check.
-   * @returns {boolean} Returns `true` if `path` exists, else `false`.
-   * @example
-   *
-   * var object = { 'a': { 'b': 2 } };
-   * var other = _.create({ 'a': _.create({ 'b': 2 }) });
-   *
-   * _.has(object, 'a');
-   * // => true
-   *
-   * _.has(object, 'a.b');
-   * // => true
-   *
-   * _.has(object, ['a', 'b']);
-   * // => true
-   *
-   * _.has(other, 'a');
-   * // => false
-   */
-  function has(object, path) {
-    return object != null && _hasPath(object, path, _baseHas);
-  }
-
-  var has_1 = has;
-
-  const toVNode = (textOrVNode) => {
-    if (typeof (textOrVNode) === 'object') return textOrVNode
-    else {
-      return {
-        children: undefined,
-        data: undefined,
-        elm: undefined,
-        key: undefined,
-        sel: undefined,
-        text: textOrVNode
-      }
-    }
-  };
-
-  const isVNode = (vnode) => {
-    if (isObject_1(vnode) && has_1(vnode, 'children') && has_1(vnode, 'data') && has_1(vnode, 'elm') && has_1(vnode, 'key') && has_1(vnode, 'sel') && has_1(vnode, 'text')) {
-      return true
-    }
-    return false
-  };
-
-  const trustHTML = (RawHTML) => {
-    const AddHTML = (vnode) => {
-      return (vnode.elm.innerHTML = RawHTML)
-    };
-    const hook = {
-      insert: AddHTML,
-      update: AddHTML
-    };
-    return h('div', {
-      hook: hook
-    })
-  };
-
-  const JsonToVNode = (json, context) => {
-    if (isString_1(json)) {
-      json = JSON.parse(json);
-    }
-
-    let children;
-
-    if (isArray_1(json['children'])) {
-      children = map_1(json['children'], (c) => {
-        return JsonToVNode(c, context)
-      });
-    } else if (isObject_1(json['children'])) {
-      children = [JsonToVNode(json['children'], context)];
-    } else if (isString_1(json['children']) && json['children'].match(/{{\s*[\w\.]+\s*}}/g)) {
-      const ctx = get_1(context, json['children'].match(/[\w\.]+/)[0]);
-
-      if (isString_1(ctx)) {
-        json['children'] = ctx;
-      } else if (isArray_1(ctx)) {
-        children = ctx;
-      } else if (isObject_1(ctx)) {
-        children = [ctx];
-      }
-    }
-
-    return {
-      children: children,
-      data: {
-        style: json['style'],
-        class: json['class'],
-        attrs: json['attrs'],
-        props: json['props']
-      },
-      elm: undefined,
-      key: json['key'],
-      sel: json['tag'],
-      text: isString_1(json['children']) ? json['children'] : undefined
-    }
-  };
-
-  var toVNode_1 = toVNode;
-  var isVNode_1 = isVNode;
-  var trustHTML_1 = trustHTML;
-  var JsonToVNode_1 = JsonToVNode;
-
-  var vDomHelpers = {
-  	toVNode: toVNode_1,
-  	isVNode: isVNode_1,
-  	trustHTML: trustHTML_1,
-  	JsonToVNode: JsonToVNode_1
-  };
-
-  // ####### Declarations ##########
-
-
-  const { forEach: forEach$3, isArray: isArray$4, isString: isString$2, has: has$1 } = lodash;
-  const { mergeWithFn: mergeWithFn$1, ss: ss$1 } = helpers;
-  const { isVNode: isVNode$1 } = vDomHelpers;
-
-  // ####### Helpers ##########
-  const getVNode = (sel = 'div', literals, ...expressions) => (data = {}, children) => {
-    const style = cssWithProps(data.styled)(literals, ...expressions);
-    const defprops = { style, styledProps: { css: cssWithPropsPlain(data.styled)(literals, ...expressions) } };
-
-    if (!children && (isVNode$1(data) || isArray$4(data) || isString$2(data))) {
-      return h(sel, defprops, data)
-    }
-
-    return h(sel, mergeWithFn$1(defprops, data), children)
-  };
-
-  const execFuncArgs = (arg, props) => {
-    if (typeof arg === 'function') {
-      if (getVNode().toString() === arg.toString()) {
-        const vnode = arg();
-
-        if (has$1(vnode, 'data.styledProps.css')) {
-          return vnode.data.styledProps.css
-        }
-
-        throw new Error('Cannot get property data.styledProps.css of given Vnode. Are you sure you passed styled component?')
-      }
-
-      if (props) {
-        return ss$1(arg(props))
-      }
-
-      return ss$1(arg())
-    }
-
-    return arg
-  };
-
-  const css = (literals, ...expressions) => {
-    let styles = ``;
-
-    forEach$3(literals, (literal, i) => {
-      if (expressions[i]) {
-        styles += `${literal}${execFuncArgs(expressions[i])}`;
-      } else {
-        styles += literal;
-      }
-    });
-
-    return cssToJS(styles)
-  };
-
-  const cssWithPropsPlain = (props) => (literals, ...expressions) => {
-    let styles = ``;
-
-    forEach$3(literals, (literal, i) => {
-      if (expressions[i]) {
-        styles += `${literal}${execFuncArgs(expressions[i], props || {})}`;
-      } else {
-        styles += literal;
-      }
-    });
-
-    return styles
-  };
-
-  const cssWithProps = (props) => (literals, ...expressions) => {
-    return cssToJS(cssWithPropsPlain(props)(literals, ...expressions))
-  };
-
-  const selector = (sel = 'div', literals, ...expressions) => {
-    return getVNode(sel, literals, ...expressions)
-  };
-
-  // ########### Composing export ###########
-  const styled = {
-    a: (literals, ...expressions) => selector('a', literals, ...expressions),
-    abbr: (literals, ...expressions) => selector('abbr', literals, ...expressions),
-    address: (literals, ...expressions) => selector('address', literals, ...expressions),
-    area: (literals, ...expressions) => selector('area', literals, ...expressions),
-    article: (literals, ...expressions) => selector('article', literals, ...expressions),
-    aside: (literals, ...expressions) => selector('aside', literals, ...expressions),
-    audio: (literals, ...expressions) => selector('audio', literals, ...expressions),
-    b: (literals, ...expressions) => selector('b', literals, ...expressions),
-    base: (literals, ...expressions) => selector('base', literals, ...expressions),
-    bdi: (literals, ...expressions) => selector('bdi', literals, ...expressions),
-    bdo: (literals, ...expressions) => selector('bdo', literals, ...expressions),
-    big: (literals, ...expressions) => selector('big', literals, ...expressions),
-    blockquote: (literals, ...expressions) => selector('blockquote', literals, ...expressions),
-    body: (literals, ...expressions) => selector('body', literals, ...expressions),
-    br: (literals, ...expressions) => selector('br', literals, ...expressions),
-    button: (literals, ...expressions) => selector('button', literals, ...expressions),
-    canvas: (literals, ...expressions) => selector('canvas', literals, ...expressions),
-    caption: (literals, ...expressions) => selector('caption', literals, ...expressions),
-    cite: (literals, ...expressions) => selector('cite', literals, ...expressions),
-    code: (literals, ...expressions) => selector('code', literals, ...expressions),
-    col: (literals, ...expressions) => selector('col', literals, ...expressions),
-    colgroup: (literals, ...expressions) => selector('colgroup', literals, ...expressions),
-    data: (literals, ...expressions) => selector('data', literals, ...expressions),
-    datalist: (literals, ...expressions) => selector('datalist', literals, ...expressions),
-    dd: (literals, ...expressions) => selector('dd', literals, ...expressions),
-    del: (literals, ...expressions) => selector('del', literals, ...expressions),
-    details: (literals, ...expressions) => selector('details', literals, ...expressions),
-    dfn: (literals, ...expressions) => selector('dfn', literals, ...expressions),
-    dialog: (literals, ...expressions) => selector('dialog', literals, ...expressions),
-    div: (literals, ...expressions) => selector('div', literals, ...expressions),
-    dl: (literals, ...expressions) => selector('dl', literals, ...expressions),
-    dt: (literals, ...expressions) => selector('dt', literals, ...expressions),
-    em: (literals, ...expressions) => selector('em', literals, ...expressions),
-    embed: (literals, ...expressions) => selector('embed', literals, ...expressions),
-    fieldset: (literals, ...expressions) => selector('fieldset', literals, ...expressions),
-    figcaption: (literals, ...expressions) => selector('figcaption', literals, ...expressions),
-    figure: (literals, ...expressions) => selector('figure', literals, ...expressions),
-    footer: (literals, ...expressions) => selector('footer', literals, ...expressions),
-    form: (literals, ...expressions) => selector('form', literals, ...expressions),
-    h1: (literals, ...expressions) => selector('h1', literals, ...expressions),
-    h2: (literals, ...expressions) => selector('h2', literals, ...expressions),
-    h3: (literals, ...expressions) => selector('h3', literals, ...expressions),
-    h4: (literals, ...expressions) => selector('h4', literals, ...expressions),
-    h5: (literals, ...expressions) => selector('h5', literals, ...expressions),
-    h6: (literals, ...expressions) => selector('h6', literals, ...expressions),
-    head: (literals, ...expressions) => selector('head', literals, ...expressions),
-    header: (literals, ...expressions) => selector('header', literals, ...expressions),
-    hgroup: (literals, ...expressions) => selector('hgroup', literals, ...expressions),
-    hr: (literals, ...expressions) => selector('hr', literals, ...expressions),
-    html: (literals, ...expressions) => selector('html', literals, ...expressions),
-    i: (literals, ...expressions) => selector('i', literals, ...expressions),
-    iframe: (literals, ...expressions) => selector('iframe', literals, ...expressions),
-    img: (literals, ...expressions) => selector('img', literals, ...expressions),
-    input: (literals, ...expressions) => selector('input', literals, ...expressions),
-    ins: (literals, ...expressions) => selector('ins', literals, ...expressions),
-    kbd: (literals, ...expressions) => selector('kbd', literals, ...expressions),
-    keygen: (literals, ...expressions) => selector('keygen', literals, ...expressions),
-    label: (literals, ...expressions) => selector('label', literals, ...expressions),
-    legend: (literals, ...expressions) => selector('legend', literals, ...expressions),
-    li: (literals, ...expressions) => selector('li', literals, ...expressions),
-    link: (literals, ...expressions) => selector('link', literals, ...expressions),
-    main: (literals, ...expressions) => selector('main', literals, ...expressions),
-    map: (literals, ...expressions) => selector('map', literals, ...expressions),
-    mark: (literals, ...expressions) => selector('mark', literals, ...expressions),
-    marquee: (literals, ...expressions) => selector('marquee', literals, ...expressions),
-    menu: (literals, ...expressions) => selector('menu', literals, ...expressions),
-    menuitem: (literals, ...expressions) => selector('menuitem', literals, ...expressions),
-    meta: (literals, ...expressions) => selector('meta', literals, ...expressions),
-    meter: (literals, ...expressions) => selector('meter', literals, ...expressions),
-    nav: (literals, ...expressions) => selector('nav', literals, ...expressions),
-    noscript: (literals, ...expressions) => selector('noscript', literals, ...expressions),
-    object: (literals, ...expressions) => selector('object', literals, ...expressions),
-    ol: (literals, ...expressions) => selector('ol', literals, ...expressions),
-    optgroup: (literals, ...expressions) => selector('optgroup', literals, ...expressions),
-    option: (literals, ...expressions) => selector('option', literals, ...expressions),
-    output: (literals, ...expressions) => selector('output', literals, ...expressions),
-    p: (literals, ...expressions) => selector('p', literals, ...expressions),
-    param: (literals, ...expressions) => selector('param', literals, ...expressions),
-    picture: (literals, ...expressions) => selector('picture', literals, ...expressions),
-    pre: (literals, ...expressions) => selector('pre', literals, ...expressions),
-    progress: (literals, ...expressions) => selector('progress', literals, ...expressions),
-    q: (literals, ...expressions) => selector('q', literals, ...expressions),
-    rp: (literals, ...expressions) => selector('rp', literals, ...expressions),
-    rt: (literals, ...expressions) => selector('rt', literals, ...expressions),
-    ruby: (literals, ...expressions) => selector('ruby', literals, ...expressions),
-    s: (literals, ...expressions) => selector('s', literals, ...expressions),
-    samp: (literals, ...expressions) => selector('samp', literals, ...expressions),
-    script: (literals, ...expressions) => selector('script', literals, ...expressions),
-    section: (literals, ...expressions) => selector('section', literals, ...expressions),
-    select: (literals, ...expressions) => selector('select', literals, ...expressions),
-    small: (literals, ...expressions) => selector('small', literals, ...expressions),
-    source: (literals, ...expressions) => selector('source', literals, ...expressions),
-    span: (literals, ...expressions) => selector('span', literals, ...expressions),
-    strong: (literals, ...expressions) => selector('strong', literals, ...expressions),
-    style: (literals, ...expressions) => selector('style', literals, ...expressions),
-    sub: (literals, ...expressions) => selector('sub', literals, ...expressions),
-    summary: (literals, ...expressions) => selector('summary', literals, ...expressions),
-    sup: (literals, ...expressions) => selector('sup', literals, ...expressions),
-    table: (literals, ...expressions) => selector('table', literals, ...expressions),
-    tbody: (literals, ...expressions) => selector('tbody', literals, ...expressions),
-    td: (literals, ...expressions) => selector('td', literals, ...expressions),
-    textarea: (literals, ...expressions) => selector('textarea', literals, ...expressions),
-    tfoot: (literals, ...expressions) => selector('tfoot', literals, ...expressions),
-    th: (literals, ...expressions) => selector('th', literals, ...expressions),
-    thead: (literals, ...expressions) => selector('thead', literals, ...expressions),
-    time: (literals, ...expressions) => selector('time', literals, ...expressions),
-    title: (literals, ...expressions) => selector('title', literals, ...expressions),
-    tr: (literals, ...expressions) => selector('tr', literals, ...expressions),
-    track: (literals, ...expressions) => selector('track', literals, ...expressions),
-    u: (literals, ...expressions) => selector('u', literals, ...expressions),
-    ul: (literals, ...expressions) => selector('ul', literals, ...expressions),
-    var: (literals, ...expressions) => selector('var', literals, ...expressions),
-    video: (literals, ...expressions) => selector('video', literals, ...expressions),
-    wbr: (literals, ...expressions) => selector('wbr', literals, ...expressions)
-  };
-
-  // ########### Export ###########
-  var styled_1 = { styled, css, cssWithProps, cssWithPropsPlain };
-
-  const { styled: styled$1, css: css$1, cssWithProps: cssWithProps$1, cssWithPropsPlain: cssWithPropsPlain$1 } = styled_1;
-
-  const snabbomReactComponents = {};
-
-  var src = snabbomReactComponents;
 
   var h_1 = h;
-  var css_1 = css$1;
-  var lazy_1$1 = lazy_1;
   var patch_1 = patch;
-  var styled_1$1 = styled$1;
-  var cssWithProps_1 = cssWithProps$1;
   var createComponent_1 = component;
-  var cssWithPropsPlain_1 = cssWithPropsPlain$1;
-  var createAsyncComponent_1 = componentAsync;
-  src.h = h_1;
-  src.css = css_1;
-  src.lazy = lazy_1$1;
-  src.patch = patch_1;
-  src.styled = styled_1$1;
-  src.cssWithProps = cssWithProps_1;
-  src.createComponent = createComponent_1;
-  src.cssWithPropsPlain = cssWithPropsPlain_1;
-  src.createAsyncComponent = createAsyncComponent_1;
 
-  console.log(src);
+  const app = createComponent_1({
+    test(custom, state, component) {
+      console.log(custom, state, component);
+    },
+    render(state, component) {
+      component.items.test('hello');
+      return h_1('div', 'hello');
+    },
+  });
+
+  patch_1(document.getElementById('root'), app);
 
 }());
 //# sourceMappingURL=bundle.js.map

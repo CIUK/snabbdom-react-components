@@ -1,75 +1,71 @@
-const mergeWith = require('lodash/mergeWith.js')
-const isArray = require('lodash/isArray.js')
-const isFunction = require('lodash/isFunction.js')
-const forEach = require('lodash/forEach.js')
-const findKey = require('lodash/findKey.js')
-const toArray = require('lodash/toArray.js')
-const transform = require('lodash/transform.js')
-const isEqual = require('lodash/isEqual.js')
-const isObject = require('lodash/isObject.js')
+const mergeWith = require('lodash/mergeWith.js');
+const isArray = require('lodash/isArray.js');
+const isFunction = require('lodash/isFunction.js');
+const forEach = require('lodash/forEach.js');
+const findKey = require('lodash/findKey.js');
+const toArray = require('lodash/toArray.js');
+const transform = require('lodash/transform.js');
+const isEqual = require('lodash/isEqual.js');
+const isObject = require('lodash/isObject.js');
 
 const mergeWithFnCustomizer = (objValue, srcValue) => {
   if (isFunction(objValue) && isFunction(srcValue)) {
     return (...args) => {
-      objValue(...args)
-      srcValue(...args)
-    }
+      objValue(...args);
+      srcValue(...args);
+    };
   }
-}
+};
 
-const mergeWithFn = (object, source) => mergeWith(object, source, mergeWithFnCustomizer)
+const mergeWithFn = (object, source) => mergeWith(object, source, mergeWithFnCustomizer);
 
 const getPropertyByCaseInsensitiveKey = (o = {}, n = '') => {
-  const k = findKey(o, (v, p) => {
-    return p.toLowerCase() === n.toLowerCase()
-  })
+  const k = findKey(o, (v, p) => p.toLowerCase() === n.toLowerCase());
 
-  return o[k]
-}
+  return o[k];
+};
 
 const differenceDeep = (object, base) => {
-  function changes (object, base) {
-    return transform(object, function (result, value, key) {
+  function changes(object, base) {
+    return transform(object, (result, value, key) => {
       if (!isEqual(value, base[key])) {
-        result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value
+        result[key] = (isObject(value) && isObject(base[key])) ? changes(value, base[key]) : value;
       }
-    })
+    });
   }
-  return changes(object, base)
-}
+  return changes(object, base);
+};
 
 const divideByProps = (object, base) => {
-  const items = {}
-  const rest = {}
+  const items = {};
+  const rest = {};
 
   forEach(object, (o, k) => {
     if (!base.hasOwnProperty(k)) {
-      items[k] = o
+      items[k] = o;
     } else {
-      rest[k] = o
+      rest[k] = o;
     }
-  })
+  });
 
-  return [items, rest]
-}
-
-function defaultsDeepPreserveArrays() {
-  let output = {}
-
-  toArray(arguments).reverse().forEach(item => {
-    mergeWith(output, item, (objectValue, sourceValue) => {
-      return isArray(sourceValue) ? sourceValue : undefined
-    })
-  })
-
-  return output
+  return [items, rest];
 };
 
-const so = (obj, dv) => (obj || dv || {})
+function defaultsDeepPreserveArrays() {
+  let output = {};
 
-const sa = (arr, dv) => (arr || dv || [])
+  toArray(arguments).reverse().forEach((item) => {
+    mergeWith(output, item, (objectValue, sourceValue) => (isArray(sourceValue) ? sourceValue : undefined));
+  });
 
-const ss = (str, dv) => (str || dv || '')
+  return output;
+}
+
+const so = (obj, dv) => (obj || dv || {});
+
+const sa = (arr, dv) => (arr || dv || []);
+
+const ss = (str, dv) => (str || dv || '');
 
 module.exports.mergeWithFn = mergeWithFn;
 module.exports.getPropertyByCaseInsensitiveKey = getPropertyByCaseInsensitiveKey;
@@ -79,4 +75,3 @@ module.exports.so = so;
 module.exports.sa = sa;
 module.exports.ss = ss;
 module.exports.divideByProps = divideByProps;
-
