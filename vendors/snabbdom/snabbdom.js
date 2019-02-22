@@ -1,22 +1,22 @@
 // jshint newcap: false
 /* global require, module, document, Node */
-'use strict';
 
-var VNode = require('./vnode');
-var is = require('./is');
-var domApi = require('./htmldomapi');
+let VNode = require('./vnode');
+let is = require('./is');
+let domApi = require('./htmldomapi');
 
 function isUndef(s) { return s === undefined; }
 function isDef(s) { return s !== undefined; }
 
-var emptyNode = VNode('', {}, [], undefined, undefined);
+let emptyNode = VNode('', {}, [], undefined, undefined);
 
 function sameVnode(vnode1, vnode2) {
   return vnode1.key === vnode2.key && vnode1.sel === vnode2.sel;
 }
 
 function createKeyToOldIdx(children, beginIdx, endIdx) {
-  var i, map = {}, key;
+  let i; let map = {}; let
+    key;
   for (i = beginIdx; i <= endIdx; ++i) {
     key = children[i].key;
     if (isDef(key)) map[key] = i;
@@ -24,10 +24,11 @@ function createKeyToOldIdx(children, beginIdx, endIdx) {
   return map;
 }
 
-var hooks = ['create', 'update', 'remove', 'destroy', 'pre', 'post'];
+let hooks = ['create', 'update', 'remove', 'destroy', 'pre', 'post'];
 
 function init(modules, api) {
-  var i, j, cbs = {};
+  let i; let j; let
+    cbs = {};
 
   if (isUndef(api)) api = domApi;
 
@@ -43,34 +44,36 @@ function init(modules, api) {
   }
 
   function createRmCb(childElm, listeners) {
-    return function() {
+    return function () {
       if (--listeners === 0) {
-        var parent = api.parentNode(childElm);
+        let parent = api.parentNode(childElm);
         api.removeChild(parent, childElm);
       }
     };
   }
 
   function createElm(vnode, insertedVnodeQueue) {
-    var i, data = vnode.data;
+    let i; let
+      data = vnode.data;
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.init)) {
         i(vnode);
         data = vnode.data;
       }
     }
-    var elm, children = vnode.children, sel = vnode.sel;
+    let elm; let children = vnode.children; let
+      sel = vnode.sel;
     if (isDef(sel)) {
       // Parse selector
-      var hashIdx = sel.indexOf('#');
-      var dotIdx = sel.indexOf('.', hashIdx);
-      var hash = hashIdx > 0 ? hashIdx : sel.length;
-      var dot = dotIdx > 0 ? dotIdx : sel.length;
-      var tag = hashIdx !== -1 || dotIdx !== -1 ? sel.slice(0, Math.min(hash, dot)) : sel;
+      let hashIdx = sel.indexOf('#');
+      let dotIdx = sel.indexOf('.', hashIdx);
+      let hash = hashIdx > 0 ? hashIdx : sel.length;
+      let dot = dotIdx > 0 ? dotIdx : sel.length;
+      let tag = hashIdx !== -1 || dotIdx !== -1 ? sel.slice(0, Math.min(hash, dot)) : sel;
       elm = vnode.elm = isDef(data) && isDef(i = data.ns) ? api.createElementNS(i, tag)
-                                                          : api.createElement(tag);
+        : api.createElement(tag);
       if (hash < dot) elm.id = sel.slice(hash + 1, dot);
-      if (dotIdx > 0) elm.className = sel.slice(dot+1).replace(/\./g, ' ');
+      if (dotIdx > 0) elm.className = sel.slice(dot + 1).replace(/\./g, ' ');
       if (is.array(children)) {
         for (i = 0; i < children.length; ++i) {
           api.appendChild(elm, createElm(children[i], insertedVnodeQueue));
@@ -97,7 +100,8 @@ function init(modules, api) {
   }
 
   function invokeDestroyHook(vnode) {
-    var i, j, data = vnode.data;
+    let i; let j; let
+      data = vnode.data;
     if (isDef(data)) {
       if (isDef(i = data.hook) && isDef(i = i.destroy)) i(vnode);
       for (i = 0; i < cbs.destroy.length; ++i) cbs.destroy[i](vnode);
@@ -111,7 +115,8 @@ function init(modules, api) {
 
   function removeVnodes(parentElm, vnodes, startIdx, endIdx) {
     for (; startIdx <= endIdx; ++startIdx) {
-      var i, listeners, rm, ch = vnodes[startIdx];
+      let i; let listeners; let rm; let
+        ch = vnodes[startIdx];
       if (isDef(ch)) {
         if (isDef(ch.sel)) {
           invokeDestroyHook(ch);
@@ -131,14 +136,16 @@ function init(modules, api) {
   }
 
   function updateChildren(parentElm, oldCh, newCh, insertedVnodeQueue) {
-    var oldStartIdx = 0, newStartIdx = 0;
-    var oldEndIdx = oldCh.length - 1;
-    var oldStartVnode = oldCh[0];
-    var oldEndVnode = oldCh[oldEndIdx];
-    var newEndIdx = newCh.length - 1;
-    var newStartVnode = newCh[0];
-    var newEndVnode = newCh[newEndIdx];
-    var oldKeyToIdx, idxInOld, elmToMove, before;
+    let oldStartIdx = 0; let
+      newStartIdx = 0;
+    let oldEndIdx = oldCh.length - 1;
+    let oldStartVnode = oldCh[0];
+    let oldEndVnode = oldCh[oldEndIdx];
+    let newEndIdx = newCh.length - 1;
+    let newStartVnode = newCh[0];
+    let newEndVnode = newCh[newEndIdx];
+    let oldKeyToIdx; let idxInOld; let elmToMove; let
+      before;
 
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
       if (isUndef(oldStartVnode)) {
@@ -179,7 +186,7 @@ function init(modules, api) {
       }
     }
     if (oldStartIdx > oldEndIdx) {
-      before = isUndef(newCh[newEndIdx+1]) ? null : newCh[newEndIdx+1].elm;
+      before = isUndef(newCh[newEndIdx + 1]) ? null : newCh[newEndIdx + 1].elm;
       addVnodes(parentElm, before, newCh, newStartIdx, newEndIdx, insertedVnodeQueue);
     } else if (newStartIdx > newEndIdx) {
       removeVnodes(parentElm, oldCh, oldStartIdx, oldEndIdx);
@@ -187,14 +194,16 @@ function init(modules, api) {
   }
 
   function patchVnode(oldVnode, vnode, insertedVnodeQueue) {
-    var i, hook;
+    let i; let
+      hook;
     if (isDef(i = vnode.data) && isDef(hook = i.hook) && isDef(i = hook.prepatch)) {
       i(oldVnode, vnode);
     }
-    var elm = vnode.elm = oldVnode.elm, oldCh = oldVnode.children, ch = vnode.children;
+    let elm = vnode.elm = oldVnode.elm; let oldCh = oldVnode.children; let
+      ch = vnode.children;
     if (oldVnode === vnode) return;
     if (!sameVnode(oldVnode, vnode)) {
-      var parentElm = api.parentNode(oldVnode.elm);
+      let parentElm = api.parentNode(oldVnode.elm);
       elm = createElm(vnode, insertedVnodeQueue);
       api.insertBefore(parentElm, elm, oldVnode.elm);
       removeVnodes(parentElm, [oldVnode], 0, 0);
@@ -224,9 +233,10 @@ function init(modules, api) {
     }
   }
 
-  return function(oldVnode, vnode) {
-    var i, elm, parent;
-    var insertedVnodeQueue = [];
+  return function (oldVnode, vnode) {
+    let i; let elm; let
+      parent;
+    let insertedVnodeQueue = [];
     for (i = 0; i < cbs.pre.length; ++i) cbs.pre[i]();
 
     if (isUndef(oldVnode.sel)) {
@@ -255,4 +265,4 @@ function init(modules, api) {
   };
 }
 
-module.exports = {init: init};
+module.exports = { init };

@@ -6,6 +6,8 @@ const isString = require('lodash/isString.js');
 const map = require('lodash/map.js');
 const get = require('lodash/get.js');
 const has = require('lodash/has.js');
+const isNull = require('lodash/isNull.js');
+const isUndefined = require('lodash/isUndefined.js');
 
 const toVNode = (textOrVNode) => {
   if (typeof (textOrVNode) === 'object') return textOrVNode;
@@ -76,7 +78,14 @@ const JsonToVNode = (json, context) => {
   };
 };
 
+const isDefinedValue = value => !isUndefined(value) && !isNull(value);
+const isGhost = vnode => !(isVNode(vnode) && (isDefinedValue(vnode.children) || isDefinedValue(vnode.text) || isDefinedValue(vnode.trustHTML)));
+const isDefinedChild = value => !isGhost(value) || (!isUndefined(value) && !isNull(value) && (isObject(value) ? isArray(value) : true));
+
 module.exports.toVNode = toVNode;
 module.exports.isVNode = isVNode;
 module.exports.trustHTML = trustHTML;
 module.exports.JsonToVNode = JsonToVNode;
+module.exports.isDefinedValue = isDefinedValue;
+module.exports.isGhost = isGhost;
+module.exports.isDefinedChild = isDefinedChild;

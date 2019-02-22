@@ -1,23 +1,44 @@
 // ####### Declarations ##########
 const h = require('../vendors/snabbdom/h.js');
 const cssToJS = require('../utils/cssToJS.js');
-const { forEach, isArray, isString, has } = require('lodash');
+const { forEach, has, filter } = require('lodash');
 const { mergeWithFn, ss } = require('../utils/helpers.js');
-const { isVNode } = require('../utils/vDomHelpers.js');
+const { isDefinedChild } = require('../utils/vDomHelpers.js');
 
-// ####### Helpers ##########
-const getVNode = (sel = 'div', literals, ...expressions) => (data = {}, children) => {
-  const style = cssWithProps(data.styled)(literals, ...expressions);
-  const defprops = { style, styledProps: { css: cssWithPropsPlain(data.styled)(literals, ...expressions) } };
+// ####### Shemas ###########
 
-  if (!children && (isVNode(data) || isArray(data) || isString(data))) {
-    return h(sel, defprops, data);
-  }
-
-  return h(sel, mergeWithFn(defprops, data), children);
+const defaultData = {
+  on: {},
+  hook: {},
+  props: {},
+  attrs: {},
+  class: {},
+  style: {},
+  styled: {},
+  dataset: {},
 };
 
-const execFuncArgs = (arg, props) => {
+// ####### Helpers ##########
+const getVNode = (sel = 'div', literals, ...expressions) => (d = { ...defaultData }, c) => {
+  let data = d;
+  let children = c;
+
+  if (!children && isDefinedChild(data)) {
+    children = data;
+    data = { ...defaultData };
+  } else {
+    data = { ...defaultData, ...data };
+  }
+
+  const props = data.styled;
+
+  const style = cssWithProps(props, data)(literals, ...expressions);
+  const defprops = { style, styledProps: { css: cssWithPropsPlain(props, data)(literals, ...expressions) } };
+
+  return h(sel, mergeWithFn(defprops, data), filter(children, child => isDefinedChild(child)));
+};
+
+const execFuncArgs = (arg, ...props) => {
   if (typeof arg === 'function') {
     if (getVNode().toString() === arg.toString()) {
       const vnode = arg();
@@ -29,8 +50,8 @@ const execFuncArgs = (arg, props) => {
       throw new Error('Cannot get property data.styledProps.css of given Vnode. Are you sure you passed styled component?');
     }
 
-    if (props) {
-      return ss(arg(props));
+    if (props.length) {
+      return ss(arg(...props));
     }
 
     return ss(arg());
@@ -39,7 +60,7 @@ const execFuncArgs = (arg, props) => {
   return arg;
 };
 
-const css = (literals, ...expressions) => {
+const cssPlain = (literals, ...expressions) => {
   let styles = '';
 
   forEach(literals, (literal, i) => {
@@ -50,15 +71,17 @@ const css = (literals, ...expressions) => {
     }
   });
 
-  return cssToJS(styles);
+  return styles;
 };
 
-const cssWithPropsPlain = props => (literals, ...expressions) => {
+const css = (literals, ...expressions) => cssToJS(cssPlain(literals, ...expressions));
+
+const cssWithPropsPlain = (...props) => (literals, ...expressions) => {
   let styles = '';
 
   forEach(literals, (literal, i) => {
     if (expressions[i]) {
-      styles += `${literal}${execFuncArgs(expressions[i], props || {})}`;
+      styles += `${literal}${execFuncArgs(expressions[i], ...props)}`;
     } else {
       styles += literal;
     }
@@ -67,7 +90,7 @@ const cssWithPropsPlain = props => (literals, ...expressions) => {
   return styles;
 };
 
-const cssWithProps = props => (literals, ...expressions) => cssToJS(cssWithPropsPlain(props)(literals, ...expressions));
+const cssWithProps = (...props) => (literals, ...expressions) => cssToJS(cssWithPropsPlain(...props)(literals, ...expressions));
 
 const selector = (sel = 'div', literals, ...expressions) => getVNode(sel, literals, ...expressions);
 

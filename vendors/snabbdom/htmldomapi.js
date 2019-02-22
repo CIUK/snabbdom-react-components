@@ -1,54 +1,52 @@
-function createElement(tagName){
+function createElement(tagName) {
   return document.createElement(tagName);
 }
 
-function createElementNS(namespaceURI, qualifiedName){
+function createElementNS(namespaceURI, qualifiedName) {
   return document.createElementNS(namespaceURI, qualifiedName);
 }
 
-function createTextNode(text){
+function createTextNode(text) {
   return document.createTextNode(text);
 }
 
-
-function insertBefore(parentNode, newNode, referenceNode){
+function insertBefore(parentNode, newNode, referenceNode) {
   parentNode.insertBefore(newNode, referenceNode);
 }
 
-
-function removeChild(node, child){
+function removeChild(node, child) {
   node.removeChild(child);
 }
 
-function appendChild(node, child){
+function appendChild(node, child) {
   node.appendChild(child);
 }
 
-function parentNode(node){
+function parentNode(node) {
   return node.parentElement;
 }
 
-function nextSibling(node){
+function nextSibling(node) {
   return node.nextSibling;
 }
 
-function tagName(node){
+function tagName(node) {
   return node.tagName;
 }
 
-function setTextContent(node, text){
+function setTextContent(node, text) {
   node.textContent = text;
 }
 
 module.exports = {
-  createElement: createElement,
-  createElementNS: createElementNS,
-  createTextNode: createTextNode,
-  appendChild: appendChild,
-  removeChild: removeChild,
-  insertBefore: insertBefore,
-  parentNode: parentNode,
-  nextSibling: nextSibling,
-  tagName: tagName,
-  setTextContent: setTextContent
+  createElement,
+  createElementNS,
+  createTextNode,
+  appendChild,
+  removeChild,
+  insertBefore,
+  parentNode,
+  nextSibling,
+  tagName,
+  setTextContent,
 };

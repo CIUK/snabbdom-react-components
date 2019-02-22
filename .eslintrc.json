@@ -15,6 +15,11 @@
         "prefer-const": "off",
         "prefer-rest-params": "off",
         "no-prototype-builtins": "warn",
-        "consistent-return": "warn"
+        "consistent-return": "warn",
+        "no-shadow":"off",
+        "no-plusplus":"warn",
+        "prefer-destructuring":"warn",
+        "no-cond-assign":"off",
+        "no-multi-assign":"off"
     }
 }
