@@ -1,7 +1,7 @@
 // ####### Declarations ##########
 const h = require('../vendors/snabbdom/h.js');
 const cssToJS = require('../utils/cssToJS.js');
-const { forEach, has, filter } = require('lodash');
+const { forEach, has, filter, defaultsDeep } = require('lodash');
 const { mergeWithFn, ss } = require('../utils/helpers.js');
 const { isDefinedChild } = require('../utils/vDomHelpers.js');
 
@@ -19,7 +19,7 @@ const defaultData = {
 };
 
 // ####### Helpers ##########
-const getVNode = (sel = 'div', literals, ...expressions) => (d = { ...defaultData }, c) => {
+const getVNode = (sel = 'div', literals, ...expressions) => (d = defaultData, c) => {
   let data = d;
   let children = c;
 
@@ -27,13 +27,15 @@ const getVNode = (sel = 'div', literals, ...expressions) => (d = { ...defaultDat
     children = data;
     data = { ...defaultData };
   } else {
-    data = { ...defaultData, ...data };
+    data = defaultsDeep(data, defaultData);
   }
 
   const props = data.styled;
 
-  const style = cssWithProps(props, data)(literals, ...expressions);
-  const defprops = { style, styledProps: { css: cssWithPropsPlain(props, data)(literals, ...expressions) } };
+  const css = cssWithPropsPlain(props, data)(literals, ...expressions);
+  const style = cssToJS(css);
+
+  const defprops = { style, styledProps: { css } };
 
   return h(sel, mergeWithFn(defprops, data), filter(children, child => isDefinedChild(child)));
 };

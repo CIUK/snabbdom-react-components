@@ -1,6 +1,6 @@
 {
   "name": "snabbdom-react-components",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "React like, Snabbdom based, Virtual Dom framework for JavaScript Web Applications",
   "keywords": [
     "React",
