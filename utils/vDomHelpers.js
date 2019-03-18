@@ -21,9 +21,14 @@ const toVNode = (textOrVNode) => {
 };
 
 const isVNode = (vnode) => {
-  if (isObject(vnode) && has(vnode, 'children') && has(vnode, 'data') && has(vnode, 'elm') && has(vnode, 'key') && has(vnode, 'sel') && has(vnode, 'text')) {
+  if (isObject(vnode) && has(vnode, 'children') && has(vnode, 'data') && has(vnode, 'sel') && has(vnode, 'elm') && has(vnode, 'key') && has(vnode, 'text')) {
     return true;
   }
+
+  if (isObject(vnode) && has(vnode, 'children') && has(vnode, 'data') && has(vnode, 'sel')) {
+    return true;
+  }
+
   return false;
 };
 
