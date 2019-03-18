@@ -1,9 +1,9 @@
 // ####### Declarations ##########
 const h = require('../vendors/snabbdom/h.js');
 const cssToJS = require('../utils/cssToJS.js');
-const { forEach, isArray, isString, has } = require('lodash');
+const { forEach, has, filter, defaultsDeep } = require('lodash');
 const { mergeWithFn, ss } = require('../utils/helpers.js');
-const { isVNode } = require('../utils/vDomHelpers.js');
+const { isDefinedChild } = require('../utils/vDomHelpers.js');
 
 // ####### Shemas ###########
 
@@ -19,23 +19,25 @@ const defaultData = {
 };
 
 // ####### Helpers ##########
-const getVNode = (sel = 'div', literals, ...expressions) => (d = { ...defaultData }, c) => {
+const getVNode = (sel = 'div', literals, ...expressions) => (d = defaultData, c) => {
   let data = d;
   let children = c;
 
-  if (!children && (isVNode(data) || isArray(data) || isString(data))) {
+  if (!children && isDefinedChild(data)) {
     children = data;
     data = { ...defaultData };
   } else {
-    data = { ...defaultData, ...data };
+    data = defaultsDeep(data, defaultData);
   }
 
   const props = data.styled;
 
-  const style = cssWithProps(props, data)(literals, ...expressions);
-  const defprops = { style, styledProps: { css: cssWithPropsPlain(props, data)(literals, ...expressions) } };
+  const css = cssWithPropsPlain(props, data)(literals, ...expressions);
+  const style = cssToJS(css);
 
-  return h(sel, mergeWithFn(defprops, data), children);
+  const defprops = { style, styledProps: { css } };
+
+  return h(sel, mergeWithFn(defprops, data), filter(children, child => isDefinedChild(child)));
 };
 
 const execFuncArgs = (arg, ...props) => {
@@ -60,7 +62,7 @@ const execFuncArgs = (arg, ...props) => {
   return arg;
 };
 
-const css = (literals, ...expressions) => {
+const cssPlain = (literals, ...expressions) => {
   let styles = '';
 
   forEach(literals, (literal, i) => {
@@ -71,8 +73,10 @@ const css = (literals, ...expressions) => {
     }
   });
 
-  return cssToJS(styles);
+  return styles;
 };
+
+const css = (literals, ...expressions) => cssToJS(cssPlain(literals, ...expressions));
 
 const cssWithPropsPlain = (...props) => (literals, ...expressions) => {
   let styles = '';

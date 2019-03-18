@@ -87,8 +87,6 @@ const actions = (viewObject) => {
   const getState = () => viewObject.actions.state;
 
   const setState = async (newState = {}, callback = null, updateView = true) => {
-    console.log('Setting new state...');
-
     let state = newState;
     let shouldComponentUpdate = true;
 
@@ -98,7 +96,6 @@ const actions = (viewObject) => {
 
     viewObject.actions.state = defaultsDeepPreserveArrays(state, viewObject.actions.state);
 
-    console.log('shouldComponentUpdate');
     if (isFunction(viewObject.actions.shouldComponentUpdate)) {
       shouldComponentUpdate = await !!viewObject.actions.shouldComponentUpdate(viewObject.actions.state, viewObject.actions);
     } else {
@@ -107,14 +104,12 @@ const actions = (viewObject) => {
 
     if (shouldComponentUpdate) {
       if (updateView) {
-        console.log('componentWillUpdate');
         if (viewObject.actions.componentWillUpdate && isFunction(viewObject.actions.componentWillUpdate)) {
           await viewObject.actions.componentWillUpdate(viewObject.actions.state, viewObject.actions, viewObject);
         }
 
         viewObject.nodes.view = patch(viewObject.nodes.view, viewObject.component.getViewComponent(viewObject.actions.state));
 
-        console.log('componentDidUpdate');
         if (viewObject.actions.componentDidUpdate && isFunction(viewObject.actions.componentDidUpdate)) {
           await viewObject.actions.componentDidUpdate(viewObject.actions.state, viewObject.actions);
         }
@@ -149,8 +144,6 @@ const actions = (viewObject) => {
 
         return result;
       });
-    } else {
-      console.error('Please provide reducer function to use this functionality!');
     }
   };
 
@@ -195,8 +188,6 @@ const actions = (viewObject) => {
 
 const componentFn = (viewObject) => {
   const getViewComponent = (newState) => {
-    console.log('Getting view...');
-
     if (viewObject.actions.render && isFunction(viewObject.actions.render)) {
       let node = null;
 
@@ -213,14 +204,10 @@ const componentFn = (viewObject) => {
   };
 
   const getViewContext = () => {
-    console.log('Finding view context...');
-
     if (viewObject.actions.spinner) {
-      console.log('View context found: Spinner');
       return loader(viewObject.actions);
     }
 
-    console.log('View context found: `render()` result');
     return getViewComponent(viewObject.actions.state);
   };
 
@@ -338,7 +325,6 @@ const createAsyncComponent = async (params = defaultParams) => {
   }
 
   if (params.componentWillCreateViewObject && isFunction(params.componentWillCreateViewObject)) {
-    console.log('componentWillCreateViewObject');
     params.componentWillCreateViewObject(params.state);
   }
 
@@ -356,7 +342,6 @@ const createAsyncComponent = async (params = defaultParams) => {
   viewObject.component = componentFn(viewObject);
 
   if (viewObject.actions.componentWillInit && isFunction(viewObject.actions.componentWillInit)) {
-    console.log('componentWillInit');
     viewObject.actions.componentWillInit(viewObject.actions.state, viewObject.actions);
   }
 
@@ -369,43 +354,36 @@ const createAsyncComponent = async (params = defaultParams) => {
     ...viewObject.nodes.view.data,
     hook: {
       init: () => {
-        console.log('init');
         if (viewObject.actions.componentDidInit && isFunction(viewObject.actions.componentDidInit)) {
           viewObject.actions.componentDidInit(viewObject.actions.state, viewObject.actions);
         }
       },
       create: () => {
-        console.log('componentWillMount');
         if (viewObject.actions.componentWillMount && isFunction(viewObject.actions.componentWillMount)) {
           viewObject.actions.componentWillMount(viewObject.actions.state, viewObject.actions);
         }
       },
       prepatch: () => {
-        console.log('prepatch');
         if (viewObject.actions.componentWillPrepatch && isFunction(viewObject.actions.componentWillPrepatch)) {
           viewObject.actions.componentWillPrepatch(viewObject.actions.state, viewObject.actions);
         }
       },
       postpatch: () => {
-        console.log('postpatch');
         if (viewObject.actions.componentWillPostpatch && isFunction(viewObject.actions.componentWillPostpatch)) {
           viewObject.actions.componentWillPostpatch(viewObject.actions.state, viewObject.actions);
         }
       },
       insert: () => {
-        console.log('componentDidMount');
         if (viewObject.actions.componentDidMount && isFunction(viewObject.actions.componentDidMount)) {
           viewObject.actions.componentDidMount(viewObject.actions.state, viewObject.actions);
         }
       },
       destroy: () => {
-        console.log('componentWillUnmount');
         if (viewObject.actions.componentWillUnmount && isFunction(viewObject.actions.componentWillUnmount)) {
           viewObject.actions.componentWillUnmount(viewObject.actions.state, viewObject.actions);
         }
       },
       remove: (vnode, removeCallback) => {
-        console.log('componentDidUnmount');
         if (viewObject.actions.componentDidUnmount && isFunction(viewObject.actions.componentDidUnmount)) {
           viewObject.actions.componentDidUnmount(viewObject.actions.state, viewObject.actions);
         }
@@ -416,7 +394,6 @@ const createAsyncComponent = async (params = defaultParams) => {
   };
 
   if (viewObject.actions.componentDidCreateViewObject && isFunction(viewObject.actions.componentDidCreateViewObject)) {
-    console.log('componentDidCreateViewObject');
     viewObject.actions.componentDidCreateViewObject(viewObject.actions.state, viewObject.actions);
   }
 
