@@ -1,10 +1,12 @@
 import resolve from 'rollup-plugin-node-resolve';
 import commonjs from 'rollup-plugin-commonjs';
 import babel from 'rollup-plugin-babel';
+import minify from 'rollup-plugin-babel-minify';
 import pkg from './package.json';
 
 const outputs = [
-  { file: pkg.module, format: 'esm', exports: 'named', sourcemap: true },
+  { file: pkg.main, format: 'cjs', exports: 'named' },
+  { file: pkg.module, format: 'esm', exports: 'named' },
 ];
 
 const dev = {
@@ -33,6 +35,7 @@ const prod = {
       presets: ['@babel/preset-env'],
       plugins: ['@babel/plugin-transform-runtime'],
     }),
+    minify(),
   ],
 };
 

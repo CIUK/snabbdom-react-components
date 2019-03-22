@@ -1,9 +1,9 @@
 // ####### Declarations ##########
 const h = require('../vendors/snabbdom/h.js');
 const cssToJS = require('../utils/cssToJS.js');
-const { forEach, has, filter, defaultsDeep } = require('lodash');
+const { forEach, has, filter, defaultsDeep, isArray } = require('lodash');
 const { mergeWithFn, ss } = require('../utils/helpers.js');
-const { isDefinedChild } = require('../utils/vDomHelpers.js');
+const { isDefinedChild, isVNode } = require('../utils/vDomHelpers.js');
 
 // ####### Shemas ###########
 
@@ -37,7 +37,17 @@ const getVNode = (sel = 'div', literals, ...expressions) => (d = defaultData, c)
 
   const defprops = { style, styledProps: { css } };
 
-  return h(sel, mergeWithFn(defprops, data), filter(children, child => isDefinedChild(child)));
+  if (isArray(children)) {
+    children = filter(children, child => isDefinedChild(child));
+  } else if (!isDefinedChild(children)) {
+    children = [];
+  }
+
+  if (isVNode(children)) {
+    children = [children];
+  }
+
+  return h(sel, mergeWithFn(defprops, data), children);
 };
 
 const execFuncArgs = (arg, ...props) => {
