@@ -7349,7 +7349,15 @@ var isDefinedValue = function isDefinedValue(value) {
 };
 
 var isGhost = function isGhost(vnode) {
-  return !(isVNode(vnode) && (isDefinedValue(vnode.children) || isDefinedValue(vnode.text) || isDefinedValue(vnode.trustHTML)));
+  if (isVNode(vnode)) {
+    if (isDefinedValue(vnode.sc)) {
+      return !(isDefinedValue(vnode.children) || isDefinedValue(vnode.text) || isDefinedValue(vnode.trustHTML));
+    }
+
+    return false;
+  }
+
+  return true;
 };
 
 var isDefinedChild = function isDefinedChild(value) {
@@ -7384,6 +7392,7 @@ var isDefinedChild$1 = vDomHelpers.isDefinedChild,
     isVNode$1 = vDomHelpers.isVNode; // ####### Shemas ###########
 
 var defaultData = {
+  sc: true,
   on: {},
   hook: {},
   props: {},

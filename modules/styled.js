@@ -8,6 +8,7 @@ const { isDefinedChild, isVNode } = require('../utils/vDomHelpers.js');
 // ####### Shemas ###########
 
 const defaultData = {
+  sc: true,
   on: {},
   hook: {},
   props: {},

@@ -84,7 +84,19 @@ const JsonToVNode = (json, context) => {
 };
 
 const isDefinedValue = value => !isUndefined(value) && !isNull(value);
-const isGhost = vnode => !(isVNode(vnode) && (isDefinedValue(vnode.children) || isDefinedValue(vnode.text) || isDefinedValue(vnode.trustHTML)));
+
+const isGhost = (vnode) => {
+  if (isVNode(vnode)) {
+    if (isDefinedValue(vnode.sc)) {
+      return !(isDefinedValue(vnode.children) || isDefinedValue(vnode.text) || isDefinedValue(vnode.trustHTML));
+    }
+
+    return false;
+  }
+
+  return true;
+};
+
 const isDefinedChild = value => !isGhost(value) || (!isUndefined(value) && !isNull(value) && (isObject(value) ? isArray(value) : true));
 
 module.exports.toVNode = toVNode;
