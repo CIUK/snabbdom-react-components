@@ -7028,7 +7028,10 @@ function () {
 }(); // ######### Export ###########
 
 
-var componentAsync = lazy_1(createAsyncComponent, loader);
+var componentAsync = {
+  createAsyncComponent: lazy_1(createAsyncComponent, loader),
+  createAsyncComponentPlain: createAsyncComponent
+};
 
 function toProperty(name) {
   if (name.charAt(0) === '-') name = name.slice(0);
@@ -7086,13 +7089,16 @@ var cssToJS = function cssToJS(code) {
   var tokens = tokenizer(code);
   var props = {};
   tokens.forEach(function (token) {
-    var _token$split = token.split(':'),
-        _token$split2 = slicedToArray(_token$split, 2),
-        prop = _token$split2[0],
-        value = _token$split2[1];
+    var prop = '';
+    var value = '';
 
-    prop = props ? prop.trim() : '';
-    value = value ? value.trim() : '';
+    for (var i = 0; i < token.length; i++) {
+      if (token.charAt(i) === ':') {
+        prop = token.substr(0, i).trim();
+        value = token.substr(i + 1, token.length).trim();
+      }
+    }
+
     props[toProperty(prop)] = value;
   });
   return props;
@@ -8356,6 +8362,8 @@ var styled_1 = {
   cssWithPropsPlain: cssWithPropsPlain
 };
 
+var createAsyncComponent$1 = componentAsync.createAsyncComponent,
+    createAsyncComponentPlain = componentAsync.createAsyncComponentPlain;
 var styled$1 = styled_1.styled,
     css$1 = styled_1.css,
     cssWithProps$1 = styled_1.cssWithProps,
@@ -8370,7 +8378,8 @@ var styled_1$1 = styled$1;
 var cssWithProps_1 = cssWithProps$1;
 var createComponent_1 = component;
 var cssWithPropsPlain_1 = cssWithPropsPlain$1;
-var createAsyncComponent_1 = componentAsync;
+var createAsyncComponent_1 = createAsyncComponent$1;
+var createAsyncComponentPlain_1 = createAsyncComponentPlain;
 src.h = h_1;
 src.css = css_1;
 src.lazy = lazy_1$1;
@@ -8380,7 +8389,8 @@ src.cssWithProps = cssWithProps_1;
 src.createComponent = createComponent_1;
 src.cssWithPropsPlain = cssWithPropsPlain_1;
 src.createAsyncComponent = createAsyncComponent_1;
+src.createAsyncComponentPlain = createAsyncComponentPlain_1;
 
 export default src;
-export { h_1 as h, css_1 as css, lazy_1$1 as lazy, patch_1 as patch, styled_1$1 as styled, cssWithProps_1 as cssWithProps, createComponent_1 as createComponent, cssWithPropsPlain_1 as cssWithPropsPlain, createAsyncComponent_1 as createAsyncComponent };
+export { h_1 as h, css_1 as css, lazy_1$1 as lazy, patch_1 as patch, styled_1$1 as styled, cssWithProps_1 as cssWithProps, createComponent_1 as createComponent, cssWithPropsPlain_1 as cssWithPropsPlain, createAsyncComponent_1 as createAsyncComponent, createAsyncComponentPlain_1 as createAsyncComponentPlain };
 //# sourceMappingURL=src.js.map

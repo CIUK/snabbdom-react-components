@@ -57,9 +57,16 @@ module.exports = function (code) {
   const props = {};
 
   tokens.forEach((token) => {
-    let [prop, value] = token.split(':');
-    prop = props ? prop.trim() : '';
-    value = value ? value.trim() : '';
+    let prop = '';
+    let value = '';
+
+    for (let i = 0; i < token.length; i++) {
+      if (token.charAt(i) === ':') {
+        prop = token.substr(0, i).trim();
+        value = token.substr(i + 1, token.length).trim();
+        break;
+      }
+    }
 
     props[toProperty(prop)] = value;
   });

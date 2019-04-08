@@ -414,4 +414,7 @@ const createAsyncComponent = async (params = defaultParams) => {
 
 // ######### Export ###########
 
-module.exports = lazy(createAsyncComponent, loader);
+module.exports = {
+  createAsyncComponent: lazy(createAsyncComponent, loader),
+  createAsyncComponentPlain: createAsyncComponent,
+};
